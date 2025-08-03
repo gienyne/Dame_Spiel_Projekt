@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="6dda8dad-6d16-4f1c-b7a9-33eb2d6143bf" name="Changes" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Enum" />
+        <option value="HTML File" />
+        <option value="Class" />
+        <option value="package-info" />
+      </list>
+    </option>
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="ProjectErrors" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4
+}</component>
+  <component name="ProjectId" id="2ZLx8DX5p4l3GZx8XY71sgaMDQc" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "DefaultHtmlFileTemplate": "HTML File",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "jdk.selected.JAVA_MODULE": "openjdk-21",
+    "last_opened_file_path": "C:/Users/Steve Kinfack/IdeaProjects/P03-PokePong/lib/junit-platform-engine-1.10.1.jar",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Libraries",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.lookFeel",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Steve Kinfack\OneDrive\Bureau\damesGame\lib" />
+      <recent name="C:\Users\Steve Kinfack\OneDrive\Bureau\damesGame\images" />
+      <recent name="C:\Users\Steve Kinfack\OneDrive\Bureau\damesGame" />
+      <recent name="C:\Users\Steve Kinfack\OneDrive\Bureau\damesGame\.idea\libraries" />
+      <recent name="C:\Users\Steve Kinfack\OneDrive\Bureau\damesGame\src\Dame" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="Main" type="Application" factoryName="Application" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="Main" />
+      <module name="damesGame" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Dame in damesGame" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="damesGame" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="Dame.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="Dame" />
+      <option name="TEST_OBJECT" value="package" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Dame.Model in damesGame" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="damesGame" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="Dame.Model.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="Dame.Model" />
+      <option name="TEST_OBJECT" value="package" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="dameModelTest.testGetWinnerBeiGameOver" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="damesGame" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="Dame.Model.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="Dame.Model" />
+      <option name="MAIN_CLASS_NAME" value="Dame.Model.dameModelTest" />
+      <option name="METHOD_NAME" value="testGetWinnerBeiGameOver" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="dameModelTest.testIsPlayerWin" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="damesGame" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="Dame.Model.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="Dame.Model" />
+      <option name="MAIN_CLASS_NAME" value="Dame.Model.dameModelTest" />
+      <option name="METHOD_NAME" value="testIsPlayerWin" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="dameModelTest.textIncrementVictories" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="damesGame" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="Dame.Model.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="Dame.Model" />
+      <option name="MAIN_CLASS_NAME" value="Dame.Model.dameModelTest" />
+      <option name="METHOD_NAME" value="textIncrementVictories" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6dda8dad-6d16-4f1c-b7a9-33eb2d6143bf" name="Changes" comment="" />
+      <created>1702215000532</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1702215000532</updated>
+      <workItem from="1713187611070" duration="12000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/damesGame$Main.ic" NAME="Main Coverage Results" MODIFIED="1705922808567" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/damesGame$Dame_Model_in_damesGame.ic" NAME="Dame.Model in damesGame Coverage Results" MODIFIED="1706123453620" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>Dame.Model.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/damesGame$Dame_in_damesGame.ic" NAME="Dame in damesGame Coverage Results" MODIFIED="1705447505605" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>Dame.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/damesGame$dameModelTest_testActuelPlayer.ic" NAME="dameModelTest.testActuelPlayer Coverage Results" MODIFIED="1705367894641" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>dameModel.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/damesGame$dameView.ic" NAME="dameView Coverage Results" MODIFIED="1705922795906" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>Dame.View.*</FILTER>
+    </SUITE>
+    <SUITE FILE_PATH="coverage/damesGame$dameModel_in_damesGame.ic" NAME="dameModel in damesGame Coverage Results" MODIFIED="1705368064736" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>dameModel.*</FILTER>
+    </SUITE>
+  </component>
+</project>
