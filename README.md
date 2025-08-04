@@ -29,7 +29,7 @@ Hier haben Sie einen kurzen Übersicht über die Funktionalitäten..
 Zu beachten hier ist allerdings der Timer..Beim Ende der Timer wird 
 das Spiel sofort beendet..
 
-![PlateauUnit2](images/plateauUnit2.png)
+![PlateauUnit2](images/PlateauUnit2.png)
 
 Hier kann festgestellt werden, dass die verschiedenen möglichen bewegungen für
 einen Stein entweder rot oder grün oder die rot und grün dargestellt.
