@@ -29,7 +29,7 @@ Kurze Übersicht über das Spiel..
 
 StartBild..
 
-![ModeSelect](images/modeSelect.png)
+![ModeSelect](images/modeSelect.jpg)
 
 Neuer Bildschirm zur Auswahl des Spielmodus (Player vs Player oder Player vs AI)..
 
