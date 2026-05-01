@@ -25,21 +25,18 @@ Das Program verwendet die folgenden Bibliotheken
 ## Screenschots
 Kurze Übersicht über das Spiel..
 
-![StartBildUnit](images/StartBildUnit.png)
-
 StartBild..
 
-![ModeSelect](images/modeSelect.jpg)
+![StartBildUnit](images/StartBildUnit.png)
 
 Neuer Bildschirm zur Auswahl des Spielmodus (Player vs Player oder Player vs AI)..
 
+![ModeSelect](images/modeSelect.jpg)
+
+Hier haben Sie einen kurzen Übersicht über die Funktionalitäten.
+Beim Ende der Timer wird das Spiel sofort beendet.
+
 ![PlateauUnit1](images/PlateauUnit1.png)
-
-Hier haben Sie einen kurzen Übersicht über die Funktionalitäten..
-Zu beachten hier ist allerdings der Timer..Beim Ende der Timer wird 
-das Spiel sofort beendet..
-
-![PlateauUnit2](images/PlateauUnit2.png)
 
 Hier kann festgestellt werden, dass die verschiedenen möglichen bewegungen für
 einen Stein entweder rot oder grün oder die rot und grün dargestellt.
@@ -47,22 +44,25 @@ wird der mögliche Zug rot dargestellt dann bedeutet das, dass einen Schlag
 in diese Richtung möglich ist..wird der hingegen grün dargestellt dann zeigt es
 einen einfachen Zug...
 
-![PlateauUnit3](images/plateauUnit3.png)
+![PlateauUnit2](images/PlateauUnit2.png)
 
 verglichen mit den möglichen Bewegungen eines Stein wird die möglichen Züge von der Dame
 durch grüne Punkte dargestellt unabhängig davon ob einen Schlag möglich ist oder nicht
 
-![gameOverBildUnit](images/gameOverBildUnit.png)
+![PlateauUnit3](images/plateauUnit3.png)
 
 EndBild wenn der Gewinner der Player1 ist
 
-![gameOverBilldUnit2](images/gameOverBilldUnit2.png)
+![gameOverBildUnit](images/gameOverBildUnit.png)
 
 EndBild wenn der Gewinner der Player2 ist (oder die KI im PVE Modus)
 
-![gameOverBildUnit0](images/gameOverBildUnit0.png)
+![gameOverBilldUnit2](images/gameOverBilldUnit2.png)
 
 EndBild wenn keiner gewinnt
+
+![gameOverBildUnit0](images/gameOverBildUnit0.png)
+
 
 
 ## Künstliche Intelligenz
