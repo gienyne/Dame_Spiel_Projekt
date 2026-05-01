@@ -36,7 +36,7 @@ Neuer Bildschirm zur Auswahl des Spielmodus (Player vs Player oder Player vs AI)
 Hier haben Sie einen kurzen Übersicht über die Funktionalitäten.
 Beim Ende der Timer wird das Spiel sofort beendet.
 
-![PlateauUnit1](images/PlateauUnit1.png)
+![PlateauUnit1](images/uebersicht.jpg)
 
 Hier kann festgestellt werden, dass die verschiedenen möglichen bewegungen für
 einen Stein entweder rot oder grün oder die rot und grün dargestellt.
@@ -44,7 +44,9 @@ wird der mögliche Zug rot dargestellt dann bedeutet das, dass einen Schlag
 in diese Richtung möglich ist..wird der hingegen grün dargestellt dann zeigt es
 einen einfachen Zug...
 
-![PlateauUnit2](images/PlateauUnit2.png)
+![PlateauUnit2](images/bewegung1.jpg)
+
+![PlateauUnit2](images/bewegung2.jpg)
 
 verglichen mit den möglichen Bewegungen eines Stein wird die möglichen Züge von der Dame
 durch grüne Punkte dargestellt unabhängig davon ob einen Schlag möglich ist oder nicht
