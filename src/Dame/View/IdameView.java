@@ -1,64 +1,77 @@
 package Dame.View;
 
 /**
- * Methode des view, auf die den Controller zugriff hat
+ * Schnittstelle der View im MVC-Muster.
+ *
+ * Definiert alle Zeichenmethoden, die der Controller aufrufen darf.
+ * Der Controller kennt nie die konkrete Implementierung {@code dameView} direkt,
+ * sondern kommuniziert ausschliesslich ueber diese Schnittstelle.
+ * Jede Methode ist für das Zeichnen eines bestimmten Bildschirmbereichs
+ * oder eines bestimmten Spielelements zuständig.
+ *
+ * @author Dimzz
+ * @version 2.0
+ * @see dameView
  */
 public interface IdameView {
-    /**
-     * gibt die Größe eines Feldes
-     * @return TailleCase
-     */
-    int getTailleCase();
 
     /**
-     * zeichnet das SpielBrett
+     * Zeichnet den Titelbildschirm.
+     * Wird aufgerufen wenn der Spielzustand START ist.
      */
-    void dessinerTableau();
+    void drawStartScreen();
 
     /**
-     * zeichnet die SpielSteine
+     * Zeichnet den Modusauswahlbildschirm mit zwei anklickbaren Karten (PVP und PVE).
+     * Wird aufgerufen wenn der Spielzustand MODE_SELECT ist.
+     * Die Klickzonen entsprechen den gezeichneten Kartenpositionen.
      */
-    void dessinerPion();
+    void drawModeSelectScreen();
 
     /**
-     * Mauseingabe des Benutzers, die an den Controller weitergeleitet wird.
+     * Zeichnet den Spielende-Bildschirm mit dem Namen des Gewinners.
+     * Wird aufgerufen wenn der Spielzustand GAME_OVER ist.
      */
-    void mousePressed();
+    void drawGameOverScreen();
 
     /**
-     * zeichen das EndBild im BildSchirm
+     * Zeichnet den allgemeinen Dekorationshintergrund des Spielbildschirms,
+     * einschliesslich Hintergrundfarben und Spielerfiguren-Bilder.
      */
-    void drawOverscreen();
+    void drawDecor();
 
     /**
-     * zeichen das StartBild im BildSchirm
-     */
-    void drawStartScreen ();
-
-    /**
-     * zeichnet den decor also verschiedene Spieler, Zeile und Farben
-     */
-    void decor();
-
-    /**
-     * draw den Timer im Bildschirm
+     * Zeichnet den Timer mit der verbleibenden Spielzeit.
      */
     void drawTimer();
 
+    /**
+     * Zeichnet das Spielbrett mit den Kacheln und hebt mögliche Züge
+     * der ausgewählten Figur hervor.
+     */
+    void drawPlateau();
 
     /**
-     * enthält und zeichnet alle notwendigen Infos über den Player1
+     * Zeichnet alle Spielfiguren (Bauern und Damen beider Spieler)
+     * an ihrer aktuellen Position auf dem Brett.
      */
-    void infoPlayer1();
+    void drawPions();
 
     /**
-     * enthält und zeichnet alle notwendige infos über den Player2
+     * Zeichnet die Spielinformationen von Spieler 1:
+     * Anzahl Bauern, Damen und Siege.
      */
-    void infoPlayer2();
-
+    void drawInfoPlayer1();
 
     /**
-     * enthält und zeichnet alle infos, die sowohl  den Spieler1 und Spieler2 betreffen
+     * Zeichnet die Spielinformationen von Spieler 2 bzw. der KI:
+     * Anzahl Bauern, Damen und Siege.
      */
-    void infoPlayer1Et2();
+    void drawInfoPlayer2();
+
+    /**
+     * Zeichnet die gemeinsamen Spielinformationen:
+     * aktuelles Gesamtergebnis und Rundennummer.
+     */
+    void drawInfoCommune();
 }

@@ -1,169 +1,212 @@
 package Dame.Controller;
 
+import Dame.Model.GameMode;
+import Dame.Model.PieceType;
+import Dame.Model.Gamestate;
+
 /**
- * Methode des Controllers, auf die den View zugriff hat
+ * Schnittstelle des Controllers im MVC-Muster.
+ *
+ * Definiert alle Methoden, die die View vom Controller aufrufen darf.
+ * Die View kennt niemals die konkrete Implementierung {@code dameController} direkt,
+ * sondern kommuniziert ausschliesslich ueber diese Schnittstelle.
+ * Dadurch bleibt die Kopplung zwischen View und Controller minimal.
+ *
+ * @author Dimzz
+ * @version 2.0
+ * @see dameController
  */
 public interface IdameController {
- /**
-  * gibt das Spielbrett zurück
-  * @return gamestates
-  */
-    char[][] getTableau();
+
+    /**
+     * Hauptanzeigemethode, die in jedem Frame von der View aufgerufen wird.
+     * Bestimmt anhand des aktuellen Spielzustands, welcher Bildschirm gezeichnet wird.
+     */
+    void handleDisplay();
 
 
- /**
-  *Wenn die Funktion aufgerufen wird, während sich der Benutzer im Startbildschirm befindet,
-  *  wird das Spiel gestartet.
-  * @param x x-koordinaten von dem ausgewählten SpielStein
-  * @param y y-koordinaten von dem ausgewählten SpielStein
-  */
- void userInput(int x , int y);
+    // Benutzereingaben
 
- /**
-  * gibt den x-koordinaten des ausgewählten SpielSteins
-  * @return model.getSelectedPionX()
-  */
+    /**
+     * Verarbeitet einen Mausklick des Benutzers.
+     * Wird nur für Spielzustand PLAYING verwendet; alle anderen Zustände
+     * werden direkt von der View abgefangen.
+     *
+     * @param mouseX horizontale Mausposition in Pixeln
+     * @param mouseY vertikale Mausposition in Pixeln
+     */
+    void handleMouseInput(int mouseX, int mouseY);
+
+    /**
+     * Verarbeitet einen Tastendruck des Benutzers.
+     *
+     * @param key die gedrückte Taste als char
+     */
+    void handleKeyInput(char key);
+
+    // Spielmodus
+
+    /**
+     * Gibt den aktuell gewählten Spielmodus zurück.
+     *
+     * @return aktueller Spielmodus (PVP oder PVE)
+     */
+    GameMode getGameMode();
+
+    /**
+     * Setzt den Spielmodus.
+     *
+     * @param mode der neue Spielmodus
+     */
+    void setGameMode(GameMode mode);
+
+    /**
+     * Wird von der View aufgerufen, wenn der Spieler auf dem Modusauswahlbildschirm
+     * einen Modus per Mausklick auswählt. Startet die Partie mit dem gewählten Modus.
+     *
+     * @param mode der vom Spieler gewählte Spielmodus
+     */
+    void selectionnerMode(Dame.Model.GameMode mode);
+
+    /**
+     * Gibt das aktuelle Spielfeld zurück.
+     *
+     * @return zweidimensionales Array des Spielfelds
+     */
+    PieceType[][] getPlateau();
+
+    /**
+     * Gibt den aktuellen Spielzustand zurück.
+     *
+     * @return aktueller Spielzustand
+     */
+    Gamestate getGameState();
+
+    /**
+     * Gibt den aktuellen Spieler zurück.
+     *
+     * @return Figurentyp des aktuellen Spielers
+     */
+    PieceType getActuelPlayer();
+
+    /**
+     * Gibt die X-Koordinate der aktuell ausgewählten Figur zurück.
+     *
+     * @return X-Koordinate oder -1 wenn keine Figur ausgewählt ist
+     */
     int getSelectedX();
 
- /**
-  * gibt den y-koordinaten des ausgewählten SpielSteins
-  * @return model.getSelectedPionY()
-  */
+    /**
+     * Gibt die Y-Koordinate der aktuell ausgewählten Figur zurück.
+     *
+     * @return Y-Koordinate oder -1 wenn keine Figur ausgewählt ist
+     */
     int getSelectedY();
 
+    /**
+     * Gibt alle möglichen Züge eines Bauern an der angegebenen Position zurück.
+     *
+     * @param x Spalte der Figur
+     * @param y Zeile der Figur
+     * @return Array von Zielkoordinaten {x, y}
+     */
+    int[][] getPossibleMovesPion(int x, int y);
 
- /**
-  * Unsere methode PossibleMovePion bestimmt für einfachen SpielStein von seinen Koordinaten aus seine möglichen bewegungen mit oder ohne Aufnahme
-  *
-  * @param x      x-koordinaten des ausgewählten SpielSteins
-  * @param y      Y-koordinaten des ausgewählten SpielSteins
-  * @param player Aktueller Spieler
-  * @return model.getPossibleMovePion
-  */
-    int[][] getPossibleMovePion(int x, int y, char player);
+    /**
+     * Gibt alle moeglichen Züge einer Dame an der angegebenen Position zurück.
+     *
+     * @param x Spalte der Figur
+     * @param y Zeile der Figur
+     * @return Array von Zielkoordinaten {x, y}
+     */
+    int[][] getPossibleMovesDame(int x, int y);
 
- /**
-  * gibt an, ob einen Zug oder Schlag für einen einfachen Spielstein möglich ist oder nicht
-  *
-  * @return model.getPrisePossible
-  */
-    boolean getPrisePossible();
+    /**
+     * Gibt an, ob im aktuellen Zug eine Schlagpflicht besteht.
+     *
+     * @return true wenn mindestens eine Figur schlagen muss
+     */
+    boolean isPrisePossible();
 
+    /**
+     * Prüft, ob ein Zug zur angegebenen Position ein Schlagzug ist.
+     *
+     * @param x Zielspalte
+     * @param y Zielzeile
+     * @return true wenn der Zug ein Schlagzug ist
+     */
+    boolean isMoveCapture(int x, int y);
 
- /**
-  * gib an, ob eine Aufnahme beim Bewegen möglich ist
-  *
-  * @param x      x-koordinaten der ausgewälten SpielStein
-  * @param y      Y-koordinaten der ausgewälten SpielStein
-  * @param player Aktuel Spieler
-  * @return true oder false
-  */
-    boolean MoveandBouffeCtrl(int x , int y, char player);
+    // Spielstatistiken
 
- /**
-  * gibt den aktuelen Player aus dem model
-  * @return model.getactuelPlayer()
-  */
- char getactuelPlayer();
+    /**
+     * Gibt die Anzahl der verbleibenden Bauern von Spieler 1 zurück.
+     *
+     * @return Anzahl Bauern Spieler 1
+     */
+    int getNbrPionPlayer1();
 
- /**
-  * Unsere methode PossibleMoveDame bestimmt für eine von seinen Koordinaten aus seine möglichen bewegungen
-  *
-  * @param x      x-koordinaten der ausgewälten Dame
-  * @param y      Y-koordinaten der ausgewälten Dame
-  * @param player Aktuel Spieler
-  * @return eine Liste von allen möglichen Bewegungen für den gewählten SpielStein
-  */
- int[][] possibleMoveDame(int x, int y, char player);
+    /**
+     * Gibt die Anzahl der verbleibenden Bauern von Spieler 2 zurück.
+     *
+     * @return Anzahl Bauern Spieler 2
+     */
+    int getNbrPionPlayer2();
 
- /**
-  * Unsere methode PossibleMovePionAfterCapture bestimmt für einfachen SpielStein nach einer ersten Bewegung mit aufnahme von seinen neuen Koordinaten aus seine neuen möglichen bewegungen mit oder ohne Aufnahme
-  *
-  * @param x      x-koordinaten des ausgewählten SpielSteins
-  * @param y      Y-koordinaten des ausgewählten SpielSteins
-  * @param player Aktueller Spieler
-  * @return model.getPossibleMovePionAfterCaptures();
-  */
- int [][] getPossibleMovePionAfterCapture(int x, int y, char player);
+    /**
+     * Gibt die Anzahl der Damen von Spieler 1 zurueck.
+     *
+     * @return Anzahl Damen Spieler 1
+     */
+    int getNbrDamePlayer1();
 
- /**
-  * gibt an, ob ein Feld eine dame enthält oder nicht
-  * @return model.getIsDame()
-  */
- boolean[][] getIsDame();
+    /**
+     * Gibt die Anzahl der Damen von Spieler 2 zurück.
+     *
+     * @return Anzahl Damen Spieler 2
+     */
+    int getNbrDamePlayer2();
 
- /**
-  * Ruft die Zeichenmethoden der view auf, abhängig vom aktuellen Spielzustand.
-  */
- void handleDisplay ();
+    /**
+     * Gibt die Anzahl der Siege von Spieler 1 zurück.
+     *
+     * @return Siege Spieler 1
+     */
+    int getVictoirePlayer1();
 
- /**
-  * verwaltet die Benutzereingaben
-  * @param key key
-  */
- void handleUserInput (char key);
+    /**
+     * Gibt die Anzahl der Siege von Spieler 2 zurück.
+     *
+     * @return Siege Spieler 2
+     */
+    int getVictoirePlayer2();
 
- /**
-  * gibt die Anzall der Spielsteine der ersten Player zurück
-  *
-  * @return model.getNbrPionPlayer1
-  */
- int getNbrPionPlayer1();
+    /**
+     * Gibt die aktuelle Rundennummer zurück.
+     *
+     * @return aktuelle Runde
+     */
+    int getManche();
 
- /**
-  * gibt die Anzall der Spielsteine der zweiten Player zurück
-  *
-  * @return model.getNbrPionPlayer2()
-  */
- int getNbrPionPlayer2();
+    /**
+     * Gibt die verbleibende Spielzeit in Sekunden zurück.
+     *
+     * @return verbleibende Zeit in Sekunden
+     */
+    int getRemainingTimer();
 
- /**
-  * gibt die Anzahl der Dame des zweiten Spielers
-  *
-  * @return model.getNbrDamePlayer2()
-  */
- int getNbrDamePlayer2();
+    /**
+     * Gibt den Gewinner der Partie zurück.
+     *
+     * @return Figurentyp des Gewinners, oder null wenn noch kein Gewinner feststeht
+     */
+    PieceType getWinner();
 
- /**
-  * gibt die Anzahl der Dame des zweiten Spielers
-  *
-  * @return model.getNbrDamePlayer1()
-  */
- int getNbrDamePlayer1();
-
- /**
-  * gibt den Gewinner des Spiels zurück
-  *
-  * @return model.getWinnerbeiGameOver()
-  */
- char getWinnerBeiGameOver();
-
- /**
-  * gibt die verbleibende Zeit zum Spielen zurück
-  *
-  * @return model.getRemainingTime()
-  */
- int getRemainingTimer();
-
- /**
-  * gibt die Anzahl der Siege des ersten Spielers zurück
-  *
-  * @return model.getVictoirePlayer1()
-  */
- int getVictoirePlayer1();
-
- /**
-  * gibt die Anzahl der Siege des zweiten Spielers zurück
-  *
-  * @return model.getVictoirePlayer2()
-  */
- int getVictoirePlayer2();
-
- /**
-  * gibt die Anzahl der gespielten Runde zurück
-  *
-  * @return model.getManche()
-  */
- int getManche();
-
+    /**
+     * Gibt die Pixelgröße einer Spielfeldkachel zurück.
+     * Wird von der View für die Umrechnung von Pixeln in Feldkoordinaten benötigt.
+     *
+     * @return Kantenlänge einer Kachel in Pixeln
+     */
+    int getTailleCase();
 }

@@ -5,19 +5,17 @@ package Dame.Model;
  */
 public enum Gamestate {
 
-    /**
-     * stellt den Anfangszustand des Spiels dar
-     */
+    /** Anfangszustand */
     START,
 
     /**
-     * steht für den Zustand während des Spiels
+     * Neuer Zustand: Der Bildschirm, auf dem der Spieler zwischen PVP und PVE wählt.
      */
+    MODE_SELECT,
+
+    /** Zustand während des Spiels */
     PLAYING,
 
-    /**
-     * stellt den EndZustand des Spiels
-     */
+    /** EndZustand */
     GAME_OVER
-
-};
+}

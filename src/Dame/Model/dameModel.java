@@ -1,127 +1,91 @@
 package Dame.Model;
 
 import java.util.ArrayList;
-
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
- * enthält die Logik des Spiels
+ * Konkrete Implementierung des Models im MVC-Muster.
+ *
+ * Enthaelt die vollstaendige Spiellogik des Damespiels. Die Methoden sind
+ * in verschiedenen Abschnitten unterteilt:
+ *
+ * Zustandsbehaftete Methoden:
+ *   Arbeiten auf dem echten Spielfeld und veraendern den internen Zustand.
+ *   Werden vom Controller fuer menschliche Spielerzuege verwendet.
+ *
+ * Zustandslose Methoden:
+ *   Arbeiten ausschliesslich auf uebergebenen Spielfeldkopien.
+ *   Veraendern keinen internen Zustand. Werden ausschliesslich von der KI
+ *   fuer Simulationen verwendet.
+ *
+ * Private gemeinsame Methoden:
+ *   Reine Hilfsmethoden ohne Zustandsaenderung, die von Abschnitt 1 und 2
+ *   gemeinsam genutzt werden. Bilden die einzige Wahrheitsquelle fuer die Regeln.
+ *
+ * Spielende, Zustand und Getter:
+ *   Verwaltung von Spielzustand, Siegbedingungen und Statistiken.
+ *
+ * @author Dimzz
+ * @version 2.0
+ * @see IdameModel
  */
+public class dameModel implements IdameModel {
 
-public class dameModel {
+    /** Anzahl der Felder pro Reihe und Spalte des Spielfelds. */
+    public static final int TAILLE = 8;
 
-    /**
-     * EMPTY stellt die leeren Felder dar, die sich in der Mitte des SpielBretts zu Begin des Spiels befinden
-     */
-    public final char EMPTY = '_'; // case du milieu au debut du jeu
-    /**
-     * PLAYER1 stellt der erste Spieler dar
-     */
-    public final char PLAYER1 = 'X'; //joueur gris en haut
-    /**
-     * PLAYER2 stellt der zweite Spieler dar
-     */
-    public final char PLAYER2 = 'O'; // joueur blanc en bas
-    /**
-     * LEER stellt die weißen Felder dar, wo Bewegungen unerlaubt sind
-     */
-    public final char LEER = '.'; //case blanches ou les deplacements ne sont pas autorisee
-    /**
-     * DAMEPLAYER1 stellt die Dame des ersten Spielers dar
-     */
-    public final char DAMEPLAYER1 = 'D';
-    /**
-     * DAMEPLAYER2 stellt die Dame des zweitens Spielers dar
-     */
-    public final char DAMEPLAYER2 = 'd';
-    /**
-     * actuelPlayer steht für den aktuellen Spieler
-     */
-    private char actuelPlayer = PLAYER1;
-    /**
-     * isDame bestimmt, ob ein Feld eine Dame enthält oder nicht
-     */
-    private boolean[][] isDame;
-    /**
-     * nbrPioPlayer1 steht für die Anzahl der Spielsteine des ersten Players
-     */
-    private int nbrPionPlayer1 = 12;
-    /**
-     * nbrPioPlayer2 steht für die Anzahl der Spielsteine des zweiten Players
-     */
-    private int nbrPionPlayer2 = 12;
-    /**
-     * nbrDamePlayer1 steht für die Anzahl der Dame des ersten Players
-     */
-    private int nbrDamePlayer1 = 0;
-    /**
-     * nbrDamePlayer2 steht für die Anzahl der Dame des zweiten Players
-     */
-    private int nbrDamePlayer2 = 0;
-    /**
-     * remainingTime steht für die maximale Spieldauer
-     */
-    private int remainingTime;
-    /**
-     * victoirePlayer1 steht für die Anzahl der Siege des ersten Spielers.
-     */
+    /** Das aktuelle Spielfeld als zweidimensionales Array. */
+    private PieceType[][] plateau;
+
+    /** Der aktuell am Zug befindliche Spieler. */
+    private PieceType actuelPlayer;
+
+    /** X-Koordinate (Spalte) der aktuell ausgewaehlten Figur. -1 wenn keine ausgewaehlt. */
+    private int selectedX = -1;
+
+    /** Y-Koordinate (Zeile) der aktuell ausgewaehlten Figur. -1 wenn keine ausgewaehlt. */
+    private int selectedY = -1;
+
+    /** Gibt an, ob der aktuelle Spieler eine Schlagpflicht hat. */
+    private boolean prisePossible = false;
+
+    /** Liste der Figuren, die im aktuellen Zug schlagen koennen. */
+    private List<int[]> pionsPouvantCapturer = new ArrayList<>();
+
+    /** Anzahl verbleibender Bauern von Spieler 1. */
+    private int nbrPionPlayer1  = 12;
+
+    /** Anzahl verbleibender Bauern von Spieler 2. */
+    private int nbrPionPlayer2  = 12;
+
+    /** Anzahl der Damen von Spieler 1. */
+    private int nbrDamePlayer1  = 0;
+
+    /** Anzahl der Damen von Spieler 2. */
+    private int nbrDamePlayer2  = 0;
+
+    /** Gesamtsiege von Spieler 1 ueber alle Runden. */
     private int victoirePlayer1 = 0;
-    /**
-     * victoirePlayer2 steht für die Anzahl der Siege des ersten Spielers.
-     */
+
+    /** Gesamtsiege von Spieler 2 ueber alle Runden. */
     private int victoirePlayer2 = 0;
 
-    /**
-     * manche stellt die Anzahl der Spielrunden dar.
-     */
-    private int manche = 1;
-    /**
-     * previousWinner steht für den Gewinner des vorherigen Spiels.
-     */
-    private char previousWinner;
-    /**
-     * Unser Array deplacement enthällt alle möglichen bewegungen eines Spielsteins von seinen Koordinaten aus
-     */
-    private ArrayList<int[]> deplacement;
-    /**
-     * possibleMoves AfterCapture enthällt die neuen möglichen bewegungen eines Spielsteins nach einer Bewegung
-     */
-    private ArrayList<int[]> possibleMovesAfterCapture;
-    /**
-     * gamestates stellt für das SpielBrett dar
-     */
-    private char[][] gamestates;
-    /**
-     * @adversaire steht für den Gegner des aktuelen Spieler
-     */
-    private char adversaire;
-    /**
-     * @param prisePossible bestimmt, ob ein Schlagen für einen einfachen Spielstein möglich ist oder nicht
-     */
-    private boolean prisePossible = false;
-    /**
-     * @param DamePrisePossible bestimmt, ob ein Schlagen für eine Dame möglich ist oder nicht
-     */
-    private boolean DamePrisePossible = false;
-    /**
-     * moveMade bestimmt, ob eine Bewegung sei es von einem einfachen SpielSteine oder eine Dame gemacht wurde oder nicht
-     */
-    private boolean moveMade = false;
-    /**
-     * @param state stellt den Zustand des Spiels dar
-     */
-    Gamestate state;
+    /** Aktuelle Rundennummer. Beginnt bei 1. */
+    private int manche          = 1;
+
+    /** Verbleibende Spielzeit in Sekunden. */
+    private int remainingTime   = 0;
 
     /**
-     * @param selectedPionsX stellt den Auswahlstatus eines SpielSteins nach ihrer x-Koordinate dar.. die Vlue -1 bedeutet, dass der Speilstein nicht ausgewählt wurde.
+     * Gewinner der vorherigen Runde.
+     * Wird bei newgame() verwendet, um die Siegzaehler zu aktualisieren.
      */
-    private int selectedPionX = -1; //pr savoir si un pion a ete selectionne ou pas..je declare ca ici prcq je veux a la fois l'utiliser ds le view et le controller
-    /**
-     * @param selectedPionsY stellt den Auswahlstatus eines SpielSteins nach ihrer y-Koordinate dar.. die Vlue -1 bedeutet, dass der Speilstein nicht ausgewählt wurde.
-     */
-    private int selectedPionY = -1;
+    private PieceType previousWinner = null;
 
     /**
-     * Construktor dameModel der Klasse dameModel initialisiert den SpielZustand und startet ein neues Spiel
+     * Erstellt ein neues Model und initialisiert den Startzustand.
      */
     public dameModel() {
         setState(Gamestate.START);
@@ -129,722 +93,811 @@ public class dameModel {
     }
 
     /**
-     * newgame initialisiert alle notwendigen Methoden zum Starten eines neuen Spiels
+     * Setzt das Spiel auf den Anfangszustand zurueck.
+     * Aktualisiert vorher die Siegzaehler anhand des Gewinners der letzten Runde.
      */
+    @Override
     public void newgame() {
-
-        remainingTime = 10;
-        isDame = new boolean[8][8];
-        gamestates = new char[8][8];
-        InitPlateaujeu();
-        setNbrPionPlayer1(12);
-        setNbrPionPlayer2(12);
-        setNbrDamePlayer1(0);
-        setNbrDamePlayer2(0);
+        plateau              = new PieceType[TAILLE][TAILLE];
+        actuelPlayer         = PieceType.PION_J1;
+        selectedX            = -1;
+        selectedY            = -1;
+        prisePossible        = false;
+        pionsPouvantCapturer = new ArrayList<>();
+        nbrPionPlayer1       = 12;
+        nbrPionPlayer2       = 12;
+        nbrDamePlayer1       = 0;
+        nbrDamePlayer2       = 0;
+        remainingTime        = 600;
         incrementVictories();
-
-
+        initPlateau();
+        calculePrisePossible();
     }
 
     /**
-     * InitPlateau initialisiert das SpielBrett zu begin des Spiels
+     * Belegt das Spielfeld mit den Startpositionen.
+     * Spieler 1 beginnt in den ersten 3 Zeilen, Spieler 2 in den letzten 3 Zeilen.
+     * Weisse Kacheln und die mittleren beiden Reihen bleiben leer.
      */
-    public void InitPlateaujeu() {
-        for (int i = 0; i < gamestates.length; i++) {
-            for (int j = 0; j < gamestates.length; j++) {
-                isDame[i][j] = false;
-
-                if ((i + j) % 2 == 0) {
-                    gamestates[i][j] = LEER;
+    private void initPlateau() {
+        for (int ligne = 0; ligne < TAILLE; ligne++) {
+            for (int col = 0; col < TAILLE; col++) {
+                if ((ligne + col) % 2 == 0) {
+                    plateau[ligne][col] = PieceType.BLANC;
+                } else if (ligne < 3) {
+                    plateau[ligne][col] = PieceType.PION_J1;
+                } else if (ligne > 4) {
+                    plateau[ligne][col] = PieceType.PION_J2;
                 } else {
-                    if (i < 3) {
-                        gamestates[i][j] = PLAYER1;
-                    } else if (i > 4) {
-                        gamestates[i][j] = PLAYER2;
-                    } else {
-                        gamestates[i][j] = EMPTY;
-                    }
+                    plateau[ligne][col] = PieceType.VIDE;
                 }
             }
         }
     }
 
+    // ZUSTANDSBEHAFTETE METHODEN (menschlicher Spieler, echtes Spiel)
+
+    // Spielfeld
+
+    /** {@inheritDoc} */
+    @Override
+    public PieceType[][] getPlateau() { return plateau; }
+
     /**
-     * getPlateau gibt das SpielBrett zurückt
+     * Setzt den Inhalt einer Kachel, falls die Koordinaten gueltig sind.
      *
-     * @return gamestates, die hier das SpielBrett darstellt
+     * @param col   Spalte der Kachel
+     * @param ligne Zeile der Kachel
+     * @param piece Figurentyp, der gesetzt werden soll
      */
-    public char[][] getPlateauJeu() {
-
-        return gamestates;
-
+    private void setPlateau(int col, int ligne, PieceType piece) {
+        if (isInsideBoard(col, ligne)) plateau[ligne][col] = piece;
     }
 
     /**
-     * gibt die Anzall der Spielsteine der ersten Player zurück
+     * Prueft, ob die angegebenen Koordinaten innerhalb des Spielfelds liegen.
      *
-     * @return nbrPionPlayer1 (stellt die anzahl der Spielsteine der ersten Player dar)
-     */
-    public int getNbrPionPlayer1() {
-        return nbrPionPlayer1;
-    }
-
-    /**
-     * gibt die Anzall der Spielsteine der zweiten Player zurück
-     *
-     * @return nbrPionPlayer2 (stellt die anzahl der Spielsteine der zweiten Player dar)
-     */
-    public int getNbrPionPlayer2() {
-        return nbrPionPlayer2;
-    }
-
-    /**
-     * gibt den Gewinner des vorherigen Spiels zurück
-     *
-     * @return previousWinner
-     */
-    public char getPreviousWinner() {
-        return previousWinner;
-    }
-
-    /**
-     * dient zur Reinitialisierung der value von previousWinner
-     *
-     * @param previousWinner
-     */
-    public void setPreviousWinner(char previousWinner) {
-        this.previousWinner = previousWinner;
-    }
-
-    /**
-     * gibt die Anzahl der Dame des zweiten Spielers
-     *
-     * @return nbrDamePlayer2
-     */
-    public int getNbrDamePlayer2() {
-        return nbrDamePlayer2;
-    }
-
-    /**
-     * gibt die Anzahl der Dame des zweiten Spielers
-     *
-     * @return nbrDamePlayer1
-     */
-    public int getNbrDamePlayer1() {
-        return nbrDamePlayer1;
-    }
-
-    /**
-     * gibt die Anzahl der Siege des ersten Spielers zurück
-     *
-     * @return victoirePlayer1;
-     */
-    public int getVictoirePlayer1() {
-        return victoirePlayer1;
-    }
-
-    /**
-     * gibt die Anzahl der Siege des zweiten Spielers zurück
-     *
-     * @return victoirePlayer2
-     */
-    public int getVictoirePlayer2() {
-        return victoirePlayer2;
-    }
-
-    /**
-     * gibt die Anzahl der gespielten Runde zurück
-     *
-     * @return manche
-     */
-    public int getManche() {
-        return manche;
-    }
-
-    /**
-     * dient zur Reinitialisierung der value von nbrPionPlayer1
-     *
-     * @param nbrPionPlayer1 nbrPionPlayer1
-     */
-    public void setNbrPionPlayer1(int nbrPionPlayer1) {
-        this.nbrPionPlayer1 = nbrPionPlayer1;
-    }
-
-    /**
-     * dient zur Reinitialisierung der value von nbrPionPlayer2
-     *
-     * @param nbrPionPlayer2 nbrPionPlayer2
-     */
-    public void setNbrPionPlayer2(int nbrPionPlayer2) {
-        this.nbrPionPlayer2 = nbrPionPlayer2;
-    }
-
-    /**
-     * dient zur Reinitialisierung der value von nbrDamePlayer1
-     *
-     * @param nbrDamePlayer1 nbrDamePlayer1
-     */
-    public void setNbrDamePlayer1(int nbrDamePlayer1) {
-        this.nbrDamePlayer1 = nbrDamePlayer1;
-    }
-
-    /**
-     * dient zur Reinitialisierung der value von nbrDamePlayer2
-     *
-     * @param nbrDamePlayer2 nbrDamePlayer2
-     */
-    public void setNbrDamePlayer2(int nbrDamePlayer2) {
-        this.nbrDamePlayer2 = nbrDamePlayer2;
-    }
-
-    /**
-     * gibt die verbleibende Zeit zum Spielen zurück
-     *
-     * @return remainingTime
-     */
-    public int getRemainingTime() {
-        return remainingTime;
-    }
-
-    /**
-     * dient zur Reinitialisierung der value von remainingTime
-     *
-     * @param remainingTime remainingTime
-     */
-    public void setRemainingTime(int remainingTime) {
-        this.remainingTime = remainingTime;
-    }
-
-    /**
-     * dient zur Reinitialisierung der value von victoirePlayer1
-     *
-     * @param victoirePlayer1 victoirePlayer1
-     */
-    public void setVictoirePlayer1(int victoirePlayer1) {
-        this.victoirePlayer1 = victoirePlayer1;
-    }
-
-    /**
-     * dient zur Reinitialisierung der value von victoirePlayer2
-     *
-     * @param victoirePlayer2 victoirePlayer2
-     */
-    public void setVictoirePlayer2(int victoirePlayer2) {
-        this.victoirePlayer2 = victoirePlayer2;
-    }
-
-    /**
-     * dient zur Reinitialisierung der value von manche
-     *
-     * @param manche manche
-     */
-    public void setManche(int manche) {
-        this.manche = manche;
-    }
-
-    /**
-     * dient zur Reinitialisierung der value von gamestates
-     *
-     * @param colonne colonne stellt die Spalte des Spielbretts dar
-     * @param ligne   ligne stellt die Spalte des Spielbretts dar
-     * @param joueur  joueur  stellt den actuelen Spielr dar
-     */
-    public void setPlateauJeu(int colonne, int ligne, char joueur) {
-        if (colonne >= 0 && colonne < 8 && ligne >= 0 && ligne < 8) {
-            gamestates[ligne][colonne] = joueur;
-        }
-    }
-
-    /**
-     * dient zur Reinitialisierung der value von selectedPionX
-     *
-     * @param selectedPionX selestedPionX
-     */
-    public void setSelectedPionX(int selectedPionX) {
-        this.selectedPionX = selectedPionX;
-    }
-
-    /**
-     * gibt der x-Koordinate des ausgewählten SpielStein
-     *
-     * @return selectedPionX
-     */
-    public int getSelectedPionX() {
-        return selectedPionX;
-    }
-
-    /**
-     * dient zur Reinitialisierung der value von selectedPionX
-     */
-    public void setSelectedPionY(int selectedPionY) {
-        this.selectedPionY = selectedPionY;
-    }
-
-    /**
-     * gibt der y-Koordinate des ausgewählten SpielStein
-     *
-     * @return selectedPionY
-     */
-    public int getSelectedPionY() {
-        return selectedPionY;
-    }
-
-    /**
-     * gibt an, ob eine Bewegung gemacht wurde oder nicht
-     *
-     * @return moveMade
-     */
-    public boolean getmoveMade() {
-        return moveMade;
-    }
-
-    /**
-     * dient zur Reinitialisierung der value von moveMade
-     *
-     * @param moveMade moveMade
-     */
-    public void setmoveMade(boolean moveMade) {
-        this.moveMade = moveMade;
-    }
-
-    /**
-     * dient zur Reinitialisierung der value von prisePossible
-     *
-     * @param prisePossible prisePossible
-     */
-    public void setPrisePossible(boolean prisePossible) {
-        this.prisePossible = prisePossible;
-    }
-
-    /**
-     * gibt an, ob einen Zug oder Schlag für einen einfachen Spielstein möglich ist oder nicht
-     *
-     * @return prisePossible
-     */
-    public boolean getPrisePossible() {
-        return prisePossible;
-    }
-
-    /**
-     * dient zur Reinitialisierung der value von DamePrisePossible
-     *
-     * @param Dameprise DamePrise
-     */
-    public void setDamePrisePossible(boolean Dameprise) {
-        this.DamePrisePossible = Dameprise;
-    }
-
-    /**
-     * gibt an, ob eine Aufnahme für eine Dame möglich ist oder nicht
-     *
-     * @return DamePrisePossible
-     */
-    public boolean getDamePrisePossible() {
-        return DamePrisePossible;
-    }
-
-    /**
-     * gibt an, ob ein Feld eine Dame enthält oder nicht
-     *
-     * @return isDame
-     */
-    public boolean[][] getIsDame() {
-        return isDame;
-    }
-
-    /**
-     * dient zur Reinitialisierung der value von isDame
-     *
-     * @param x     x-kordinaten eines Feldes
-     * @param y     y-koordinaten eines Feldes
-     * @param value value (true: bedeutet das Feld enthält eine Dame und false: das gegenteil
-     */
-    public void setIsDame(int x, int y, boolean value) {
-        isDame[y][x] = value;
-
-    }
-
-    /**
-     * gibt den Zustand des Spiels zurück
-     *
-     * @return state
-     */
-    public Gamestate getState() {
-        return state;
-    }
-
-    /**
-     * dient zur Reinitialisierung der value von state
-     *
-     * @param state state
-     */
-    public void setState(Gamestate state) {
-        this.state = state;
-    }
-
-    /**
-     * Unsere methode PossibleMovePion bestimmt für einfachen SpielStein von seinen Koordinaten aus seine möglichen bewegungen mit oder ohne Aufnahme
-     *
-     * @param x      x-koordinaten des ausgewählten SpielSteins
-     * @param y      Y-koordinaten des ausgewählten SpielSteins
-     * @param joueur Aktueller Spieler
-     * @return eine Liste von allen möglichen Bewegungen für den gewählten SpielStein
-     */
-    public int[][] PossibleMovePion(int x, int y, char joueur) {
-        deplacement = new ArrayList<>();
-
-        // ist Spieler jr1 wenn ja sein Gegner ist jr2 sonst ist es jr1
-
-        if (joueur == PLAYER1) {
-            adversaire = PLAYER2;
-        } else if (joueur == PLAYER2) {
-            adversaire = PLAYER1;
-        }
-
-
-        // Überprüfung der möglichen diagonalen Züge für den aktuellen Spieler.
-        // Wenn der Spieler unten auf dem Brett steht, werden die Züge für ihn umgekehrt.
-
-        int direction = (joueur == PLAYER1) ? 1 : -1;
-
-
-        //Überprüfung einfacher diagonaler Züge (ohne Fressen / aufnahme)
-        if (y + direction >= 0 && y + direction < 8) {// wir bleiben innerhalb der Grenzen unseres Spiels, d.h. unseres Heights, um Überschreitungen zu vermeiden.
-
-            if (x > 0 && gamestates[y + direction][x - 1] == EMPTY) { // überprüft, ob das diagonal obere linke Feld leer ist (enthält '_'), was bedeutet, dass ein Zug möglich ist.
-                deplacement.add(new int[]{x - 1, y + direction});
-            }
-            if (x < 7 && gamestates[y + direction][x + 1] == EMPTY) {
-                deplacement.add(new int[]{x + 1, y + direction});
-            }
-        }
-
-        //Überprüfung mit Aufnahme der SpielSteine
-        if (y + 2 * direction >= 0 && y + 2 * direction < 8) {// le fois 2 parceque avec bouffe ou prise de pions adverses le deplacement s'effectura chaque fois de 2 cases
-            if (x > 1 && (gamestates[y + direction][x - 1] == adversaire || gamestates[y + direction][x - 1] == (getactuelPlayer() == PLAYER1?DAMEPLAYER2:DAMEPLAYER1) ) && gamestates[y + 2 * direction][x - 2] == EMPTY) { // x > 1 le jr adverse doit etre au moins a la 2e ligne
-                deplacement.add(new int[]{x - 2, y + 2 * direction});
-                setPrisePossible(true);
-
-            }
-
-            if (x < 6 && (gamestates[y + direction][x + 1] == adversaire || gamestates[y + direction][x + 1] == (getactuelPlayer() == PLAYER1?DAMEPLAYER2:DAMEPLAYER1)) && gamestates[y + 2 * direction][x + 2] == EMPTY) {
-                deplacement.add(new int[]{x + 2, y + 2 * direction});
-                setPrisePossible(true);
-
-            }
-        }
-
-
-        int[][] deplacementPion = new int[deplacement.size()][2];
-        for (int i = 0; i < deplacement.size(); i++) {
-            deplacementPion[i] = deplacement.get(i);
-        }
-
-        return deplacementPion;
-
-    }
-
-    /**
-     * Unsere methode PossibleMovePionAfterCapture bestimmt für einfachen SpielStein nach einer ersten Bewegung mit aufnahme von seinen neuen Koordinaten aus seine neuen möglichen bewegungen mit oder ohne Aufnahme
-     *
-     * @param x      x-koordinaten der ausgewälten SpielStein
-     * @param y      Y-koordinaten der ausgewälten SpielStein
-     * @param joueur Aktue Spieler
-     * @return eine Liste von allen möglichen Bewegungen für den gewählten SpielStein
-     */
-    public int[][] getPossibleMovePionAfterCaptures(int x, int y, char joueur) {
-        possibleMovesAfterCapture = new ArrayList<>();
-
-        int direction = (joueur == PLAYER1) ? 1 : -1;
-
-        //Überprüfung mit Aufnahme der SpielSteine
-        if (y + 2 * direction >= 0 && y + 2 * direction < 8) {// le fois 2 parceque avec bouffe ou prise de pions adverses le deplacement s'effectura chaque fois de 2 cases
-            if (x > 1 && (gamestates[y + direction][x - 1] == adversaire || gamestates[y + direction][x - 1] == (getactuelPlayer() == PLAYER1?DAMEPLAYER2:DAMEPLAYER1)) && gamestates[y + 2 * direction][x - 2] == EMPTY) { // x > 1 le jr adverse doit etre au moins a la 2e ligne
-                possibleMovesAfterCapture.add(new int[]{x - 2, y + 2 * direction});
-                setPrisePossible(true);
-            }
-
-            if (x < 6 && (gamestates[y + direction][x + 1] == adversaire || gamestates[y + direction][x + 1] == (getactuelPlayer() == PLAYER1?DAMEPLAYER2:DAMEPLAYER1))&& gamestates[y + 2 * direction][x + 2] == EMPTY) {
-                possibleMovesAfterCapture.add(new int[]{x + 2, y + 2 * direction});
-                setPrisePossible(true);
-            }
-        }
-        // umwandlung der Liste der möglichen Bewegungen in eine 2D-Tabelle.
-        int[][] movesArray = new int[possibleMovesAfterCapture.size()][2];
-        for (int i = 0; i < possibleMovesAfterCapture.size(); i++) {
-            movesArray[i] = possibleMovesAfterCapture.get(i);
-        }
-
-        return movesArray;
-
-
-    }
-
-    /**
-     * dient zur Reinitialisierung der aktuelen Spieler
-     *
-     * @param actuelPlayer actuelPlayer
-     */
-    public void setActuelPlayer(char actuelPlayer) {
-        this.actuelPlayer = actuelPlayer;
-    }
-
-    /**
-     * gibt den aktuelen Spieler zurück
-     *
-     * @return actuelPlayer
-     */
-    public char getactuelPlayer() {
-        return actuelPlayer;
-    }
-
-    /**
-     * Diese Methode behandelt Spielerwechsel.
-     *
-     * @param moveTrue moveTrue
-     */
-    public void changePlayer(boolean moveTrue) {
-        if (moveTrue) {
-            if (getactuelPlayer() == PLAYER1 || getactuelPlayer() == DAMEPLAYER1) {
-                setActuelPlayer(PLAYER2);
-            } else if (getactuelPlayer() == PLAYER2 || getactuelPlayer() == DAMEPLAYER2) {
-                setActuelPlayer(PLAYER1);
-            }
-        }
-
-    }
-
-    /**
-     * gib an, ob eine Aufnahme beim Bewegen möglich ist
-     *
-     * @param x      x-koordinaten der ausgewälten SpielStein
-     * @param y      Y-koordinaten der ausgewälten SpielStein
-     * @param player Aktuel Spieler
-     * @return true oder false
-     */
-    public boolean isMoveAndBouffe(int x, int y, char player) {
-        int selectedX = getSelectedPionX();
-        int selectedY = getSelectedPionY();
-
-        int[][] possibleMoves = PossibleMovePion(getSelectedPionX(), getSelectedPionY(), getactuelPlayer());
-
-        for (int[] move : possibleMoves) {
-            if (move[0] == x && move[1] == y) {
-                int dx = (x - selectedX) / 2; // Calcul des déplacements horizontaux
-                int dy = (y - selectedY) / 2; // Calcul des déplacements verticaux
-
-
-                // Vérification si la case médiane est occupée par un pion adverse
-                if (gamestates[selectedY + dy][selectedX + dx] != EMPTY &&
-                        gamestates[selectedY + dy][selectedX + dx] != player) {
-                    return true; // Un pion adverse est présent pour être capturé
-                }
-            }
-        }
-
-        return false; // Aucune capture possible pour ce déplacement
-    }
-
-    /**
-     * dient zur Umwandlund eines SpielSteins zu einer Dame
-     *
-     * @param x      x-koordinaten der ausgewälten SpielStein
-     * @param y      Y-koordinaten der ausgewälten SpielStein
-     * @param player Aktuel Spieler
-     */
-    public void pionToDame(int x, int y, char player) {
-
-        if ((player == PLAYER1 && y == 7 && gamestates[y][x] == 'X') ||
-                (player == PLAYER2 && y == 0 && gamestates[y][x] == 'O')) {
-
-            // Aktualisiert den neuen Zustand der alte SpielStein zu einer Dame
-            gamestates[y][x] = (player == PLAYER1) ? 'D' : 'd';
-
-        }
-        if (gamestates[y][x] == 'D') {
-            nbrDamePlayer1++;
-        } else if (gamestates[y][x] == 'd') {
-            nbrDamePlayer2++;
-        }
-
-        //steht nur für die debuggage
-        System.out.println("x: " + x + " y: " + y);
-      /*  for (int i = 0; i < isDame.length; i++) {
-            for (int j = 0; j < isDame.length; j++) {
-                System.out.println(" case : x = " + j + " j = " + i + " " + isDame[i][j]);
-            }
-        }*/
-
-    }
-
-
-    /**
-     * Unsere methode PossibleMoveDame bestimmt für eine von seinen Koordinaten aus seine möglichen bewegungen
-     *
-     * @param x      x-koordinaten der ausgewälten Dame
-     * @param y      Y-koordinaten der ausgewälten Dame
-     * @param player Aktuel Spieler
-     * @return eine Liste von allen möglichen Bewegungen für den gewählten SpielStein
-     */
-    public int[][] possibleMoveDame(int x, int y, char player) {
-        ArrayList<int[]> deplacements = new ArrayList<>();
-
-        // Déplacements dans toutes les directions (avec et sans prise)
-        int[][] directions = {{-1, 1}, {1, 1}, {-1, -1}, {1, -1}};
-
-        for (int[] direction : directions) {
-            int dx = direction[0];
-            int dy = direction[1];
-
-            for (int i = 1; i < 8; i++) {
-                int newX = x + i * dx;
-                int newY = y + i * dy;
-
-                if (newX >= 0 && newX < 8 && newY >= 0 && newY < 8) {
-                    if (gamestates[newY][newX] == EMPTY) {
-                        deplacements.add(new int[]{newX, newY});
-                    } else if (gamestates[newY][newX] != (player == 'D' ? PLAYER1 : PLAYER2)) {
-                        // Case occupée par un pion adverse, vérifie si la case suivante est vide
-                        int nextX = x + (i + 1) * dx;
-                        int nextY = y + (i + 1) * dy;
-
-                        if (nextX >= 0 && nextX < 8 && nextY >= 0 && nextY < 8 &&
-                                gamestates[nextY][nextX] == EMPTY) {
-                            deplacements.add(new int[]{nextX, nextY});
-                            setDamePrisePossible(true);
-                        } else {
-                            break;  // Arrête la boucle si la prise n'est pas possible
-                        }
-                    } else {
-                        break;  // Arrête la boucle si la case est occupée par le joueur actuel
-                    }
-                } else {
-                    break;  // Arrête la boucle si on dépasse les limites du plateau
-                }
-            }
-        }
-
-        int[][] deplacementDlaDame = new int[deplacements.size()][2];
-        for (int i = 0; i < deplacements.size(); i++) {
-            deplacementDlaDame[i] = deplacements.get(i);
-        }
-
-        return deplacementDlaDame;
-    }
-
-    /**
-     * gibt an, ob ein Player gewonnen hat
-     *
-     * @param player
-     * @return true oder false
-     */
-    public boolean isPlayerWin(char player) {
-        if (player == PLAYER1 && getNbrPionPlayer2() == 0) {
-            return true;
-        } else if (player == PLAYER2 && getNbrPionPlayer1() == 0) {
-            return true;
-        } else if (player == PLAYER1 && getNbrPionPlayer1() > getNbrPionPlayer2()) {
-            return true;
-        } else if (player == PLAYER2 && getNbrPionPlayer2() > getNbrPionPlayer1()) {
-            return true;
-        }
-        return false;
-
-    }
-
-    /**
-     * gibt an, ob eine Bewegung für einen SpielStein möglich ist oder nicht
-     *
-     * @param player player
-     * @return player
-     */
-    public boolean isNoMovePossible(char player) {
-
-        for (int i = 0; i < gamestates.length; i++) {
-            for (int j = 0; j < gamestates.length; j++) {
-                if (gamestates[i][j] == player) {
-                    int[][] possibleMove = PossibleMovePion(i, j, player);
-
-                    if (possibleMove.length > 0) {
-                        return false;
-                    } // besizt mindestens eine erlaubte Bewegung
-                }
-            }
-        }
-        return true; //keine Bewegung möglich
-    }
-
-    /**
-     * gibt den Gewinner des Spiels zurück
-     *
-     * @return gewinner
-     */
-    public char getWinnerBeiGameOver() {
-        // Vérifie si le joueur actuel a mangé tous les pions adverses
-        if (isPlayerWin(PLAYER1)) {
-            //setVictoirePlayer1(getVictoirePlayer1() + 1);
-            return PLAYER1;
-        } else if (isPlayerWin(PLAYER2)) {
-            // setVictoirePlayer2(getVictoirePlayer2() + 1);
-            return PLAYER2;
-        }
-
-        System.out.println("previous winner: " + previousWinner);
-        System.out.println("Player2 pions: " + getNbrPionPlayer2());
-        // Vérifiez si le joueur actuel n'a plus de mouvements possibles
-        if (isNoMovePossible(getactuelPlayer())) {
-            setState(Gamestate.GAME_OVER);
-            return getactuelPlayer() == PLAYER1 ? PLAYER2 : PLAYER1;
-        }
-        return ' '; // Aucun gagnant, le jeu continue
-
-
-    }
-
-    /**
-     * dient zur Aktualisierung der Anzahl der Siege sei es vom Player1 oder Player1
-     * und aktualisiert zugleich die Anzahl der gespielten Runde..
-     */
-    public void incrementVictories() {
-
-        if (previousWinner == PLAYER1) {
-            setVictoirePlayer1(getVictoirePlayer1() + 1);
-            setManche(getManche() + 1);
-        } else if (previousWinner == PLAYER2) {
-            setVictoirePlayer2(getVictoirePlayer2() + 1);
-            setManche(getManche() + 1);
-        } else if (previousWinner == ' ') {
-            setManche(getManche() + 1);
-        }
-    }
-
-    /**
-     * gibt an, ob sich einen ausgewählten SpielStein innerhalb der Grenzen unseres Spiels befindet
-     *
-     * @param x x-koordinaten des ausgewählten SpielStein
-     * @param y y-koordinaten des ausgewählten SpielStein
-     * @return true oder false
+     * @param x Spalte
+     * @param y Zeile
+     * @return true wenn die Koordinaten gueltig sind
      */
     public boolean isInsideBoard(int x, int y) {
-        return x >= 0 && x < gamestates[0].length && y >= 0 && y < gamestates.length;
+        return x >= 0 && x < TAILLE && y >= 0 && y < TAILLE;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public PieceType getActuelPlayer() { return actuelPlayer; }
+
+    /** {@inheritDoc} */
+    @Override
+    public void changePlayer(boolean moveMade) {
+        if (!moveMade) return;
+        actuelPlayer = estJ1(actuelPlayer) ? PieceType.PION_J2 : PieceType.PION_J1;
+        clearSelected();
+        calculePrisePossible();
+    }
+
+
+    @Override public int getSelectedX()              { return selectedX; }
+    @Override public int getSelectedY()              { return selectedY; }
+    @Override public void setSelected(int x, int y) { selectedX = x; selectedY = y; }
+    @Override public void clearSelected()            { selectedX = -1; selectedY = -1; }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean peutEtreSelectionne(int x, int y) {
+        if (!prisePossible) return true;
+        for (int[] pos : pionsPouvantCapturer) {
+            if (pos[0] == x && pos[1] == y) return true;
+        }
+        return false;
+    }
+
+    // Berechnung der Schlagpflicht (echtes Spiel (keine KI Simulation) )
+
+    /**
+     * Berechnet, welche Figuren des aktuellen Spielers schlagen koennen,
+     * und aktualisiert prisePossible sowie pionsPouvantCapturer entsprechend.
+     * Wird nach jedem Zugwechsel aufgerufen.
+     */
+
+    private void calculePrisePossible() {
+        pionsPouvantCapturer = new ArrayList<>();
+        for (int ligne = 0; ligne < TAILLE; ligne++) {
+            for (int col = 0; col < TAILLE; col++) {
+                PieceType piece = plateau[ligne][col];
+                if (!estJoueurActuel(piece)) continue;
+                boolean isDame = estDame(piece);
+                if (isDame ? damePeutCapturer(col, ligne, plateau) : pionPeutCapturer(col, ligne, plateau)) {
+                    pionsPouvantCapturer.add(new int[]{col, ligne});
+                }
+            }
+        }
+        prisePossible = !pionsPouvantCapturer.isEmpty();
+    }
+
+    // Moegliche Zuege - Bauer bzw Spielstein (echtes Spiel)
+
+    @Override
+    public int[][] getPossibleMovesPion(int x, int y) {
+        List<int[]> moves = new ArrayList<>();
+        int direction = estJ1(actuelPlayer) ? 1 : -1;
+
+        if (prisePossible) {
+            for (int[] cap : getCapturesPion(plateau, x, y, actuelPlayer)) {
+                moves.add(new int[]{cap[2], cap[3]});
+            }
+        } else {
+            addSimpleMove(moves, x, y, x - 1, y + direction);
+            addSimpleMove(moves, x, y, x + 1, y + direction);
+        }
+        return toArray(moves);
     }
 
     /**
-     * Zeichnet das SpielBrett in der Konsole
+     * Fuegt einen einfachen (nicht schlagenden) Zug zur Liste hinzu,
+     * falls die Zielkachel innerhalb des Bretts und leer ist.
+     */
+    private void addSimpleMove(List<int[]> moves, int fx, int fy, int tx, int ty) {
+        if (isInsideBoard(tx, ty) && plateau[ty][tx] == PieceType.VIDE)
+            moves.add(new int[]{tx, ty});
+    }
+
+
+    // Moegliche Zuege - Dame (echtes Spiel)
+
+    @Override
+    public int[][] getPossibleMovesDame(int x, int y) {
+        List<int[]> moves = new ArrayList<>();
+        int[][] dirs = {{-1,1},{1,1},{-1,-1},{1,-1}};
+
+        if (prisePossible) {
+            for (int[] cap : getCapturesDame(plateau, x, y, actuelPlayer)) {
+                moves.add(new int[]{cap[2], cap[3]});
+            }
+        } else {
+            for (int[] dir : dirs) {
+                for (int i = 1; i < TAILLE; i++) {
+                    int nx = x + i * dir[0], ny = y + i * dir[1];
+                    if (!isInsideBoard(nx, ny)) break;
+                    if (plateau[ny][nx] != PieceType.VIDE) break;
+                    moves.add(new int[]{nx, ny});
+                }
+            }
+        }
+        return toArray(moves);
+    }
+
+    // Schlagkette
+
+    /**
+     * {@inheritDoc}
      *
-     * @return das SpielBrett
+     * Gibt alle Kacheln zurueck, die ueber eine Schlagkette erreichbar sind.
+     * Der Spieler kann sich an jedem Zwischenschritt stoppen.
+     * Beispiel: A -> B -> C ist moeglich. Das Ergebnis enthaelt B und C.
+     * Klick auf B: eine Figur geschlagen, Zug beendet.
+     * Klick auf C: zwei Figuren geschlagen, Zug beendet.
+     */
+    @Override
+    public int[][] getChaineCaptures(int x, int y) {
+        Set<String> visited = new HashSet<>();
+        List<int[]> destinations = new ArrayList<>();
+        PieceType[][] sim = copierPlateau(plateau);
+        explorerChaine(x, y, sim, destinations, visited);
+        return toArray(destinations);
+    }
+
+    /**
+     * Rekursive Erkundung der Schlagkette vom Punkt (x, y) aus.
+     * Jede erreichbare Position nach einem Schlag wird als Ziel hinzugefuegt.
+     * Anschliessend werden weitere Schlaege von dieser Position aus erkundet.
+     *
+     * @param x            aktuelle Spalte der schlagenden Figur
+     * @param y            aktuelle Zeile der schlagenden Figur
+     * @param sim          simuliertes Spielfeld fuer diese Rekursionsebene
+     * @param destinations bisher gefundene Zielkacheln
+     * @param visited      bereits verarbeitete Zug-Schlager-Kombinationen (verhindert Endlosschleifen)
+     */
+    private void explorerChaine(int x, int y, PieceType[][] sim,
+                                List<int[]> destinations, Set<String> visited) {
+        PieceType piece  = sim[y][x];
+        boolean isDame   = estDame(piece);
+        int[] dxs = {-1, 1, -1, 1};
+        int[] dys = {-1, -1, 1, 1};
+
+        for (int i = 0; i < 4; i++) {
+            if (isDame) {
+                boolean adversaireTrouve = false;
+                int midX = -1, midY = -1;
+
+                for (int step = 1; step < TAILLE; step++) {
+                    int nx = x + step * dxs[i];
+                    int ny = y + step * dys[i];
+                    if (!isInsideBoard(nx, ny)) break;
+
+                    PieceType cible = sim[ny][nx];
+
+                    if (!adversaireTrouve) {
+                        if (cible == PieceType.VIDE) continue; //leeres Feld vor dem Gegner
+                        if (estAdversairePour(cible, actuelPlayer)) {
+                            adversaireTrouve = true;
+                            midX = nx; midY = ny;
+                        } else {
+                            break;
+                        }
+                    } else {
+                        if (cible != PieceType.VIDE) break;
+
+                        String key = nx + "," + ny + "|" + midX + "," + midY;
+                        if (visited.contains(key)) continue;
+                        visited.add(key);
+
+                        PieceType[][] nouveauSim = copierPlateau(sim);
+                        nouveauSim[ny][nx]     = nouveauSim[y][x];
+                        nouveauSim[y][x]       = PieceType.VIDE;
+                        nouveauSim[midY][midX] = PieceType.VIDE;
+
+                        destinations.add(new int[]{nx, ny});
+
+                        Set<String> visitedSuite = new HashSet<>(visited);
+                        explorerChaine(nx, ny, nouveauSim, destinations, visitedSuite);
+                    }
+                }
+            } else {
+
+                int midX = x + dxs[i], midY = y + dys[i];
+                int toX  = x + 2 * dxs[i], toY = y + 2 * dys[i];
+                if (!isInsideBoard(midX, midY) || !isInsideBoard(toX, toY)) continue;
+                PieceType mid = sim[midY][midX];
+                PieceType to  = sim[toY][toX];
+                if (!estAdversairePour(mid, actuelPlayer) || to != PieceType.VIDE) continue;
+                String key = toX + "," + toY + "|" + midX + "," + midY;
+                if (visited.contains(key)) continue;
+                visited.add(key);
+                PieceType[][] nouveauSim = copierPlateau(sim);
+                nouveauSim[toY][toX]   = nouveauSim[y][x];
+                nouveauSim[y][x]       = PieceType.VIDE;
+                nouveauSim[midY][midX] = PieceType.VIDE;
+                destinations.add(new int[]{toX, toY});
+                Set<String> visitedSuite = new HashSet<>(visited);
+                explorerChaine(toX, toY, nouveauSim, destinations, visitedSuite);
+            }
+        }
+    }
+
+    // Zugausfuehrung (echtes Spiel)
+
+    /**
+     * {@inheritDoc}
+     *
+     * Bei Schlagpflicht muss die Zielposition zu getChaineCaptures gehoeren.
+     * Dies stellt sicher, dass mindestens eine Figur geschlagen wird,
+     * unabhaengig davon, wie weit die Schlagkette fortgesetzt wird.
+     */
+    @Override
+    public boolean executerDeplacement(int toX, int toY) {
+        if (selectedX == -1 || selectedY == -1) return false;
+
+        PieceType piece = plateau[selectedY][selectedX];
+        boolean isDame  = estDame(piece);
+
+        int[][] movesPossibles;
+
+        if (prisePossible) {
+            movesPossibles = getChaineCaptures(selectedX, selectedY);
+        } else {
+            movesPossibles = isDame
+                    ? getPossibleMovesDame(selectedX, selectedY)
+                    : getPossibleMovesPion(selectedX, selectedY);
+        }
+
+        boolean estValide = false;
+        for (int[] move : movesPossibles) {
+            if (move[0] == toX && move[1] == toY) { estValide = true; break; }
+        }
+        if (!estValide) return false;
+
+        if (isDame) {
+            executerDeplacementDame(selectedX, selectedY, toX, toY);
+        } else {
+            executerDeplacementPion(selectedX, selectedY, toX, toY);
+        }
+        return true;
+    }
+
+    /**
+     * Fuehrt den Zug eines Bauern aus.
+     * Bei einem Schlagzug wird die geschlagene Figur entfernt.
+     * Anschliessend wird die Befoerderung geprueft.
+     * Kann die Figur nach dem Schlag weiter schlagen, behaelt der Spieler die Hand.
+     * Bei einer Befoerderung endet der Zug sofort (Regelkonform).
+     *
+     * @param fromX Ausgangsspalte
+     * @param fromY Ausgangszeile
+     * @param toX   Zielspalte
+     * @param toY   Zielzeile
+     */
+    private void executerDeplacementPion(int fromX, int fromY, int toX, int toY) {
+        PieceType piece    = plateau[fromY][fromX];
+        boolean estCapture = Math.abs(toX - fromX) == 2;
+
+        if (estCapture) {
+            int midX = (fromX + toX) / 2;
+            int midY = (fromY + toY) / 2;
+            capturerPiece(midX, midY);
+        }
+
+        setPlateau(fromX, fromY, PieceType.VIDE);
+        setPlateau(toX, toY, piece);
+        verifierPromotion(toX, toY);
+
+        if (estCapture) {
+            selectedX = toX;
+            selectedY = toY;
+            // Neu berechnen, ob dieser bestimmte Stein noch schlagen kann
+            PieceType pieceApres = plateau[toY][toX];
+            boolean peutEnchaîner = estDame(pieceApres)
+                    ? damePeutCapturer(toX, toY, plateau)
+                    : pionPeutCapturer(toX, toY, plateau);
+
+            if (peutEnchaîner) {
+                prisePossible = true;
+                pionsPouvantCapturer = new ArrayList<>();
+                pionsPouvantCapturer.add(new int[]{toX, toY});
+                return; // Der Spieler bleibt am Zug
+            }
+        }
+
+        prisePossible = false;
+        pionsPouvantCapturer = new ArrayList<>();
+        clearSelected();
+    }
+
+    /**
+     * Fuehrt den Zug einer Dame aus.
+     * Die Dame kann sich beliebig weit diagonal bewegen und schlaegt alle
+     * gegnerischen Figuren auf ihrem Weg zur Zielkachel.
+     * Kann die Dame nach dem Zug weiter schlagen, behaelt der Spieler die Hand.
+     *
+     * @param fromX Ausgangsspalte
+     * @param fromY Ausgangszeile
+     * @param toX   Zielspalte
+     * @param toY   Zielzeile
+     */
+    private void executerDeplacementDame(int fromX, int fromY, int toX, int toY) {
+        PieceType piece = plateau[fromY][fromX];
+        int dx = Integer.signum(toX - fromX);
+        int dy = Integer.signum(toY - fromY);
+        int x = fromX + dx, y = fromY + dy;
+
+        while (x != toX || y != toY) {
+            if (estAdversairePour(plateau[y][x], actuelPlayer)) capturerPiece(x, y);
+            x += dx; y += dy;
+        }
+
+        setPlateau(fromX, fromY, PieceType.VIDE);
+        setPlateau(toX, toY, piece);
+
+        // Prüfen, ob die Dame von toX nach toY schlagen kann
+        if (damePeutCapturer(toX, toY, plateau)) {
+            selectedX = toX;
+            selectedY = toY;
+            prisePossible = true;
+            pionsPouvantCapturer = new ArrayList<>();
+            pionsPouvantCapturer.add(new int[]{toX, toY});
+            return;
+        }
+
+        prisePossible = false;
+        pionsPouvantCapturer = new ArrayList<>();
+        clearSelected();
+    }
+
+    /**
+     * Entfernt die Figur an der angegebenen Position und dekrementiert den entsprechenden Zaehler.
+     *
+     * @param x Spalte der zu schlagenden Figur
+     * @param y Zeile der zu schlagenden Figur
+     */
+    private void capturerPiece(int x, int y) {
+        PieceType piece = plateau[y][x];
+        if (piece == PieceType.PION_J1)  nbrPionPlayer1--;
+        if (piece == PieceType.PION_J2)  nbrPionPlayer2--;
+        if (piece == PieceType.DAME_J1)  nbrDamePlayer1--;
+        if (piece == PieceType.DAME_J2)  nbrDamePlayer2--;
+        setPlateau(x, y, PieceType.VIDE);
+    }
+
+    /**
+     * Fuehrt die Befoerderung eines Bauern zur Dame durch, falls die Bedingung erfuellt ist.
+     * Aktualisiert ausserdem die Figurenzaehler.
+     *
+     * @param x Spalte
+     * @param y Zeile
+     */
+    private void verifierPromotion(int x, int y) {
+        PieceType piece = plateau[y][x];
+        if (piece == PieceType.PION_J1 && y == TAILLE - 1) {
+            setPlateau(x, y, PieceType.DAME_J1);
+            nbrDamePlayer1++; nbrPionPlayer1--;
+        } else if (piece == PieceType.PION_J2 && y == 0) {
+            setPlateau(x, y, PieceType.DAME_J2);
+            nbrDamePlayer2++; nbrPionPlayer2--;
+        }
+    }
+
+    // ZUSTANDSLOSE METHODEN (KI-Simulation)
+
+    /** {@inheritDoc} */
+    @Override
+    public int[][] getCoupsPossibles(PieceType[][] plat, PieceType joueur) {
+        List<int[]> captures = new ArrayList<>();
+        List<int[]> normaux  = new ArrayList<>();
+
+        for (int ligne = 0; ligne < TAILLE; ligne++) {
+            for (int col = 0; col < TAILLE; col++) {
+                PieceType piece = plat[ligne][col];
+                if (!appartientA(piece, joueur)) continue;
+
+                boolean isDame = estDame(piece);
+
+                List<int[]> caps = isDame
+                        ? getCapturesDame(plat, col, ligne, joueur)
+                        : getCapturesPion(plat, col, ligne, joueur);
+                captures.addAll(caps);
+
+                if (caps.isEmpty()) {
+                    List<int[]> mvts = isDame
+                            ? getMouvementsNormauxDame(plat, col, ligne)
+                            : getMouvementsNormauxPion(plat, col, ligne, joueur);
+                    normaux.addAll(mvts);
+                }
+            }
+        }
+
+        return toArray(captures.isEmpty() ? normaux : captures);
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Loescht nur gegnerische Figuren auf dem Weg (nicht alle Felder).
+     * Fuehrt ausserdem eine Befoerderung durch, wenn die Zielzeile erreicht ist.
+     */
+    @Override
+    public void appliquerCoupSurPlateau(PieceType[][] plat, int[] coup) {
+        int fromX = coup[0], fromY = coup[1];
+        int toX   = coup[2], toY   = coup[3];
+        PieceType piece = plat[fromY][fromX];
+
+        if (Math.abs(toX - fromX) >= 2) {
+            int dx = Integer.signum(toX - fromX);
+            int dy = Integer.signum(toY - fromY);
+            int cx = fromX + dx, cy = fromY + dy;
+            while (cx != toX || cy != toY) {
+                plat[cy][cx] = PieceType.VIDE;
+                cx += dx; cy += dy;
+            }
+        }
+
+        plat[fromY][fromX] = PieceType.VIDE;
+        plat[toY][toX]     = piece;
+
+        if (piece == PieceType.PION_J1 && toY == TAILLE - 1) plat[toY][toX] = PieceType.DAME_J1;
+        if (piece == PieceType.PION_J2 && toY == 0)           plat[toY][toX] = PieceType.DAME_J2;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public PieceType[][] copierPlateau(PieceType[][] src) {
+        PieceType[][] copie = new PieceType[TAILLE][TAILLE];
+        for (int i = 0; i < TAILLE; i++) copie[i] = src[i].clone();
+        return copie;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean estPartieTermineeSurPlateau(PieceType[][] plat) {
+        boolean j1 = false, j2 = false;
+        for (PieceType[] row : plat)
+            for (PieceType p : row) {
+                if (p == PieceType.PION_J1 || p == PieceType.DAME_J1) j1 = true;
+                if (p == PieceType.PION_J2 || p == PieceType.DAME_J2) j2 = true;
+            }
+        return !j1 || !j2;
+    }
+
+    // PRIVATE GEMEINSAME METHODEN (reine Regellogik)
+
+    /**
+     * Gibt alle Schlagmoeglichkeiten eines Bauern an Position (x, y) zurueck.
+     * Ein Bauer kann in alle vier Diagonalrichtungen schlagen.
+     *
+     * @param plat   Spielfeld, auf dem gesucht wird
+     * @param x      Spalte des Bauern
+     * @param y      Zeile des Bauern
+     * @param joueur der schlagende Spieler
+     * @return Liste von Zuegen {fromX, fromY, toX, toY}
+     */
+    private List<int[]> getCapturesPion(PieceType[][] plat, int x, int y, PieceType joueur) {
+        List<int[]> coups = new ArrayList<>();
+        int[] dxs = {-1, 1, -1, 1};
+        int[] dys = {-1, -1, 1, 1};
+        for (int i = 0; i < 4; i++) {
+            int midX = x + dxs[i], midY = y + dys[i];
+            int toX  = x + 2 * dxs[i], toY = y + 2 * dys[i];
+            if (!isInsideBoard(midX, midY) || !isInsideBoard(toX, toY)) continue;
+            if (estAdversairePour(plat[midY][midX], joueur) && plat[toY][toX] == PieceType.VIDE)
+                coups.add(new int[]{x, y, toX, toY});
+        }
+        return coups;
+    }
+
+    /**
+     * Gibt alle Schlagmoeglichkeiten einer Dame an Position (x, y) zurueck.
+     * Eine Dame kann beliebig weit diagonal springen und nach dem Schlag
+     * auf jeder freien Kachel hinter der geschlagenen Figur landen.
+     *
+     * @param plat   Spielfeld, auf dem gesucht wird
+     * @param x      Spalte der Dame
+     * @param y      Zeile der Dame
+     * @param joueur der schlagende Spieler
+     * @return Liste von Zuegen {fromX, fromY, toX, toY}
+     */
+    private List<int[]> getCapturesDame(PieceType[][] plat, int x, int y, PieceType joueur) {
+        List<int[]> coups = new ArrayList<>();
+        int[][] dirs = {{-1,1},{1,1},{-1,-1},{1,-1}};
+        for (int[] d : dirs) {
+            boolean adversaireTrouve = false;
+            for (int i = 1; i < TAILLE; i++) {
+                int nx = x + i * d[0], ny = y + i * d[1];
+                if (!isInsideBoard(nx, ny)) break;
+                PieceType p = plat[ny][nx];
+                if (p == PieceType.VIDE) {
+                    if (adversaireTrouve) coups.add(new int[]{x, y, nx, ny});
+                } else if (estAdversairePour(p, joueur)) {
+                    if (adversaireTrouve) break;
+                    adversaireTrouve = true;
+                } else { break; }
+            }
+        }
+        return coups;
+    }
+
+    /**
+     * Prueft, ob ein Bauer an der angegebenen Position schlagen kann.
+     *
+     * @param x    Spalte
+     * @param y    Zeile
+     * @param plat Spielfeld
+     * @return true wenn der Bauer schlagen kann
+     */
+    private boolean pionPeutCapturer(int x, int y, PieceType[][] plat) {
+        return !getCapturesPion(plat, x, y, actuelPlayer).isEmpty();
+    }
+
+    /**
+     * Prueft, ob eine Dame an der angegebenen Position schlagen kann.
+     *
+     * @param x    Spalte
+     * @param y    Zeile
+     * @param plat Spielfeld
+     * @return true wenn die Dame schlagen kann
+     */
+    private boolean damePeutCapturer(int x, int y, PieceType[][] plat) {
+        return !getCapturesDame(plat, x, y, actuelPlayer).isEmpty();
+    }
+
+    /**
+     * Gibt alle normalen (nicht schlagenden) Zuege eines Bauern zurueck.
+     *
+     * @param plat   Spielfeld
+     * @param x      Spalte des Bauern
+     * @param y      Zeile des Bauern
+     * @param joueur der ziehende Spieler
+     * @return Liste von Zuegen {fromX, fromY, toX, toY}
+     */
+    private List<int[]> getMouvementsNormauxPion(PieceType[][] plat, int x, int y, PieceType joueur) {
+        List<int[]> coups = new ArrayList<>();
+        int dir = estJ1(joueur) ? 1 : -1;
+        for (int dx : new int[]{-1, 1}) {
+            int nx = x + dx, ny = y + dir;
+            if (isInsideBoard(nx, ny) && plat[ny][nx] == PieceType.VIDE)
+                coups.add(new int[]{x, y, nx, ny});
+        }
+        return coups;
+    }
+
+    /**
+     * Gibt alle normalen (nicht schlagenden) Zuege einer Dame zurueck.
+     * Die Dame kann sich beliebig weit diagonal bewegen, solange keine Figur den Weg versperrt.
+     *
+     * @param plat Spielfeld
+     * @param x    Spalte der Dame
+     * @param y    Zeile der Dame
+     * @return Liste von Zuegen {fromX, fromY, toX, toY}
+     */
+    private List<int[]> getMouvementsNormauxDame(PieceType[][] plat, int x, int y) {
+        List<int[]> coups = new ArrayList<>();
+        int[][] dirs = {{-1,1},{1,1},{-1,-1},{1,-1}};
+        for (int[] d : dirs) {
+            for (int i = 1; i < TAILLE; i++) {
+                int nx = x + i * d[0], ny = y + i * d[1];
+                if (!isInsideBoard(nx, ny) || plat[ny][nx] != PieceType.VIDE) break;
+                coups.add(new int[]{x, y, nx, ny});
+            }
+        }
+        return coups;
+    }
+
+    /**
+     * Prueft, ob eine Figur zu Spieler 1 gehoert (Bauer oder Dame).
+     *
+     * @param p der Figurentyp
+     * @return true wenn die Figur Spieler 1 gehoert
+     */
+    private boolean estJ1(PieceType p) {
+        return p == PieceType.PION_J1 || p == PieceType.DAME_J1;
+    }
+
+    /**
+     * Prueft, ob eine Figur eine Dame ist.
+     *
+     * @param p der Figurentyp
+     * @return true wenn es sich um eine Dame handelt
+     */
+    private boolean estDame(PieceType p) {
+        return p == PieceType.DAME_J1 || p == PieceType.DAME_J2;
+    }
+
+    /**
+     * Prueft, ob eine Figur dem aktuell am Zug befindlichen Spieler gehoert.
+     *
+     * @param p der Figurentyp
+     * @return true wenn die Figur dem aktuellen Spieler gehoert
+     */
+    private boolean estJoueurActuel(PieceType p) {
+        return appartientA(p, actuelPlayer);
+    }
+
+    /**
+     * Prueft, ob eine Figur zum angegebenen Spieler gehoert.
+     *
+     * @param piece  der Figurentyp
+     * @param joueur der Spieler
+     * @return true wenn die Figur zum Spieler gehoert
+     */
+    private boolean appartientA(PieceType piece, PieceType joueur) {
+        return estJ1(joueur) ? estJ1(piece) : (!estJ1(piece) && piece != PieceType.VIDE && piece != PieceType.BLANC);
+    }
+
+    /**
+     * Prueft, ob eine Figur eine gegnerische Figur des angegebenen Spielers ist.
+     * Einzige Wahrheitsquelle fuer die Gegnerpruefung in der gesamten Klasse.
+     *
+     * @param piece  der Figurentyp
+     * @param joueur der Spieler, dessen Sicht eingenommen wird
+     * @return true wenn die Figur ein Gegner des Spielers ist
+     */
+    private boolean estAdversairePour(PieceType piece, PieceType joueur) {
+        if (piece == PieceType.VIDE || piece == PieceType.BLANC) return false;
+        return estJ1(joueur) ? !estJ1(piece) : estJ1(piece);
+    }
+
+    /**
+     * Konvertiert eine Liste von int[]-Arrays in ein zweidimensionales Array.
+     *
+     * @param list die zu konvertierende Liste
+     * @return zweidimensionales Array
+     */
+    private int[][] toArray(List<int[]> list) {
+        return list.toArray(new int[0][]);
+    }
+
+    // SPIELENDE, ZUSTAND UND GETTER
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isPrisePossible() { return prisePossible; }
+
+    /** {@inheritDoc} */
+    @Override
+    public boolean isMoveCapture(int x, int y) {
+        if (selectedX == -1 || selectedY == -1) return false;
+        return Math.abs(x - selectedX) >= 2;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
+     * Prueft drei Abbruchbedingungen:
+     * 1. Spieler 1 hat keine Figuren mehr.
+     * 2. Spieler 2 hat keine Figuren mehr.
+     * 3. Der aktuelle Spieler hat keinen gueltigen Zug mehr.
+     */
+    @Override
+    public void checkGameOver() {
+        if (nbrPionPlayer1 + nbrDamePlayer1 == 0) setState(Gamestate.GAME_OVER);
+        else if (nbrPionPlayer2 + nbrDamePlayer2 == 0) setState(Gamestate.GAME_OVER);
+        else if (isNoMovePossible()) setState(Gamestate.GAME_OVER);
+    }
+
+    /**
+     * Prueft, ob der aktuelle Spieler keinen einzigen gueltigen Zug mehr hat.
+     *
+     * @return true wenn der aktuelle Spieler blockiert ist
+     */
+    private boolean isNoMovePossible() {
+        for (int ligne = 0; ligne < TAILLE; ligne++)
+            for (int col = 0; col < TAILLE; col++) {
+                if (!estJoueurActuel(plateau[ligne][col])) continue;
+                boolean isDame = estDame(plateau[ligne][col]);
+                int[][] moves = isDame
+                        ? getPossibleMovesDame(col, ligne)
+                        : getPossibleMovesPion(col, ligne);
+                if (moves.length > 0) return false;
+            }
+        return true;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public PieceType getWinner() {
+        if (state != Gamestate.GAME_OVER) return null;
+        if (nbrPionPlayer1 + nbrDamePlayer1 == 0) return PieceType.PION_J2;
+        if (nbrPionPlayer2 + nbrDamePlayer2 == 0) return PieceType.PION_J1;
+        return estJ1(actuelPlayer) ? PieceType.PION_J2 : PieceType.PION_J1;
+    }
+
+    /**
+     * Erhoet den Siegzaehler des Gewinners der vorherigen Runde und inkrementiert die Runde.
+     * Wird einmalig am Anfang von newgame() aufgerufen.
+     */
+    private void incrementVictories() {
+        if (previousWinner == PieceType.PION_J1) { victoirePlayer1++; manche++; }
+        else if (previousWinner == PieceType.PION_J2) { victoirePlayer2++; manche++; }
+    }
+
+    /** Aktueller Spielzustand. */
+    private Gamestate state;
+
+    @Override public Gamestate getState()           { return state; }
+    @Override public void setState(Gamestate state) { this.state = state; }
+
+    @Override public int getNbrPionPlayer1()  { return nbrPionPlayer1; }
+    @Override public int getNbrPionPlayer2()  { return nbrPionPlayer2; }
+    @Override public int getNbrDamePlayer1()  { return nbrDamePlayer1; }
+    @Override public int getNbrDamePlayer2()  { return nbrDamePlayer2; }
+    @Override public int getVictoirePlayer1() { return victoirePlayer1; }
+    @Override public int getVictoirePlayer2() { return victoirePlayer2; }
+    @Override public int getManche()          { return manche; }
+    @Override public int getRemainingTime()   { return remainingTime; }
+    @Override public void setRemainingTime(int time) { this.remainingTime = time; }
+
+    /**
+     * Gibt eine textuelle Darstellung des Spielfelds zurueck.
+     * Nuetzlich fuer Debugging.
+     *
+     * @return Spielfeld als mehrzeiliger String
      */
     @Override
     public String toString() {
-        return String.format("%c %c %c %c %c %c %c %c\n%c %c %c %c %c %c %c %c\n%c %c %c %c %c %c %c %c\n%c %c %c %c %c %c %c %c\n%c %c %c %c %c %c %c %c\n%c %c %c %c %c %c %c %c\n%c %c %c %c %c %c %c %c\n%c %c %c %c %c %c %c %c\n",
-                gamestates[0][0], gamestates[0][1], gamestates[0][2], gamestates[0][3], gamestates[0][4], gamestates[0][5], gamestates[0][6], gamestates[0][7],
-                gamestates[1][0], gamestates[1][1], gamestates[1][2], gamestates[1][3], gamestates[1][4], gamestates[1][5], gamestates[1][6], gamestates[1][7],
-                gamestates[2][0], gamestates[2][1], gamestates[2][2], gamestates[2][3], gamestates[2][4], gamestates[2][5], gamestates[2][6], gamestates[2][7],
-                gamestates[3][0], gamestates[3][1], gamestates[3][2], gamestates[3][3], gamestates[3][4], gamestates[3][5], gamestates[3][6], gamestates[3][7],
-                gamestates[4][0], gamestates[4][1], gamestates[4][2], gamestates[4][3], gamestates[4][4], gamestates[4][5], gamestates[4][6], gamestates[4][7],
-                gamestates[5][0], gamestates[5][1], gamestates[5][2], gamestates[5][3], gamestates[5][4], gamestates[5][5], gamestates[5][6], gamestates[5][7],
-                gamestates[6][0], gamestates[6][1], gamestates[6][2], gamestates[6][3], gamestates[6][4], gamestates[6][5], gamestates[6][6], gamestates[6][7],
-                gamestates[7][0], gamestates[7][1], gamestates[7][2], gamestates[7][3], gamestates[7][4], gamestates[7][5], gamestates[7][6], gamestates[7][7]);
+        StringBuilder sb = new StringBuilder();
+        for (int ligne = 0; ligne < TAILLE; ligne++) {
+            for (int col = 0; col < TAILLE; col++) {
+                switch (plateau[ligne][col]) {
+                    case PION_J1 -> sb.append("X ");
+                    case PION_J2 -> sb.append("O ");
+                    case DAME_J1 -> sb.append("D ");
+                    case DAME_J2 -> sb.append("d ");
+                    case VIDE    -> sb.append("_ ");
+                    case BLANC   -> sb.append(". ");
+                }
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
     }
-
 }

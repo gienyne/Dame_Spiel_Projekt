@@ -1,114 +1,84 @@
 package Dame.Controller;
+
+import Dame.Model.IdameModel;
 import Dame.Model.Gamestate;
-import Dame.Model.dameModel;
-import Dame.View.IdameView;
 
 /**
- * verwaltet den Timer
+ * Hintergrund-Thread, der den Spielzeitcountdown verwaltet.
+ *
+ * Der Thread dekrementiert sekündlich die verbleibende Spielzeit im Model.
+ * Erreicht die Zeit null, wird der Spielzustand auf GAME_OVER gesetzt.
+ * Der Thread läuft als Daemon-Thread, sodass er automatisch beendet wird,
+ * wenn die JVM heruntergefahren wird.
+ *
+ * @author Dimzz
+ * @version 2.0
  */
-public class timerThread extends Thread{
+public class timerThread {
+
+    /** Referenz auf das Model, um die verbleibende Zeit zu lesen und zu setzen. */
+    private final IdameModel model;
+
+    /** Referenz auf den Controller, für eventuelle spätere Erweiterungen. */
+    private final IdameController controller;
+
+    /** Der interne Java-Thread, der den Countdown ausführt. */
+    private Thread thread;
 
     /**
-     * legt die Spieldauer fest
+     * Steuervariable des Threads.
+     * Wird auf false gesetzt, um den Thread sauber zu stoppen.
      */
-    private timerThread timer;
+    private boolean running = false;
 
     /**
-     * model
+     * Erstellt einen neuen Timer.
+     *
+     * @param model      das Spielmodell, in dem die Zeit gespeichert ist
+     * @param controller der Controller, dem dieser Timer gehört
      */
-    final private dameModel model;
-
-    /**
-     * view
-     */
-    final  private IdameView view;
-
-    /**
-     * stellt die festgelegte Spieldauer dar
-     */
-    private final int secondes;
-
-    /**
-     * Zustand des Threads
-     */
-    private boolean isRunning = true;
-
-    /**
-     * Konstruktor
-     * @param secondes secondes
-     * @param model model
-     * @param view view
-     */
-
-    public timerThread(int secondes, dameModel model, IdameView view) {
-        this.secondes = secondes;
-        this.model = model;
-        this.view = view;
-
+    public timerThread(IdameModel model, IdameController controller) {
+        this.model      = model;
+        this.controller = controller;
     }
 
     /**
-     * Draw den Gewinner auf dem Bildschirm
-     */
-    public void endSpielByTimer (){
-     char winner = model.getWinnerBeiGameOver();
-          System.out.println("value: " + winner);
-
-        if(winner == 'X'){
-
-            view.drawOverscreen();
-            System.out.println("PLAYER1 WON");
-        }
-        else if (winner == 'O'){
-
-           view.drawOverscreen();
-            System.out.println("PLAYER2 WON");
-        }
-        else {
-            view.drawOverscreen();
-            System.out.println("DRAW... NO TEAM WON");
-        }
-
-        model.setPreviousWinner(winner);
-        System.out.println("Previosu win: " +  model.getPreviousWinner());
-        model.setState(Gamestate.GAME_OVER);
-        stopTimer();
-        isRunning = false;// Signal d'arrêt  du thread
-    }
-
-    /**
-     * startet den Timer
+     * Startet den Countdown.
+     * Erstellt und startet einen neuen Thread, der jede Sekunde
+     * die verbleibende Zeit um eins dekrementiert.
+     * Erreicht die Zeit null, wird der Spielzustand auf GAME_OVER gesetzt.
      */
     public void startTimer() {
-        timer = new timerThread(secondes, model, view);
-        timer.start();
+        running = true;
+        thread = new Thread(() -> {
+            while (running && model.getRemainingTime() > 0) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+                if (running) {
+                    model.setRemainingTime(model.getRemainingTime() - 1);
+                }
+            }
+            if (running && model.getRemainingTime() <= 0) {
+                model.setState(Gamestate.GAME_OVER);
+            }
+        });
+        thread.setDaemon(true);
+        thread.start();
     }
 
     /**
-     * beendet den Timer
+     * Stoppt den Countdown.
+     * Setzt running auf false und unterbricht den Thread, falls er noch läuft.
+     * Wird beim Eintreten in GAME_OVER aufgerufen.
      */
-    public void stopTimer(){
-        if(timer != null){
-            timer.interrupt();
-        }
-    }
-
-    /**
-     *  diese Methode verwaltet den Zeitzähler also den Timer
-     */
-
-    public void run(){
-        try{
-            while(model.getRemainingTime() > 0) {
-                Thread.sleep((long) secondes * 1000);
-                model.setRemainingTime(model.getRemainingTime() - 1);
-            }
-            if (isRunning) {
-                endSpielByTimer();
-
-            }
-        }catch (InterruptedException e){
-            e.printStackTrace();
+    public void stopTimer() {
+        running = false;
+        if (thread != null) {
+            thread.interrupt();
         }
     }
 }
