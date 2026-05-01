@@ -335,10 +335,10 @@ public class dameView extends PApplet implements IdameView {
         fill(0);
         PieceType player = controller.getActuelPlayer();
         if (player == PieceType.PION_J1 || player == PieceType.DAME_J1) {
-            text("It's the grey player's turn.", 680, 160);
+            text("It's the grey player's turn.", 715, 160);
         } else {
             boolean pve = (controller.getGameMode() == GameMode.PVE);
-            text(pve ? "AI is thinking..." : "It's the white player's turn.", 680, 160);
+            text(pve ? "AI is thinking..." : "It's the white player's turn.", 710, 160);
         }
     }
 
@@ -449,9 +449,9 @@ public class dameView extends PApplet implements IdameView {
         fill(150); ellipse(700, 200, 30, 30);
         textSize(20); fill(0);
         text("Player 1 :",   665, 260);
-        text("Pawns : "      + controller.getNbrPionPlayer1(),  620, 310);
-        text("Dames : "      + controller.getNbrDamePlayer1(),  620, 360);
-        text("Victories : "  + controller.getVictoirePlayer1(), 620, 410);
+        text("Pawns : "      + controller.getNbrPionPlayer1(),  658, 310);
+        text("Dames : "      + controller.getNbrDamePlayer1(),  661, 360);
+        text("Victories : "  + controller.getVictoirePlayer1(), 658, 410);
     }
 
     /**
@@ -465,9 +465,9 @@ public class dameView extends PApplet implements IdameView {
         textSize(20); fill(0);
         boolean pve = (controller.getGameMode() == GameMode.PVE);
         text(pve ? "IA :" : "Player 2 :", 898, 260);
-        text("Pawns : "      + controller.getNbrPionPlayer2(),  860, 310);
-        text("Dames : "      + controller.getNbrDamePlayer2(),  860, 360);
-        text("Victories : "  + controller.getVictoirePlayer2(), 860, 410);
+        text("Pawns : "      + controller.getNbrPionPlayer2(),  892, 310);
+        text("Dames : "      + controller.getNbrDamePlayer2(),  894, 360);
+        text("Victories : "  + controller.getVictoirePlayer2(), 892, 410);
     }
 
     /**
@@ -477,8 +477,8 @@ public class dameView extends PApplet implements IdameView {
     public void drawInfoCommune() {
         fill(0); textSize(22);
         text("Score : " + controller.getVictoirePlayer1()
-                + " - " + controller.getVictoirePlayer2(), 730, 470);
-        text("Round : " + controller.getManche(), 730, 510);
+                + " - " + controller.getVictoirePlayer2(), 771, 470);
+        text("Round : " + controller.getManche(), 780, 510);
     }
 
     /**
