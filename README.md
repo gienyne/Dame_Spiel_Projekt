@@ -72,7 +72,7 @@ The AI maximizes its own advantage while minimizing the opponent's.
 
 **Splash screen**
 
-![StartBild](images/startscreen.png)
+![StartBild](images/startScreen.png)
 
 **Mode selection screen**
 
