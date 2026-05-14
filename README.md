@@ -1,3 +1,8 @@
+![Java](https://img.shields.io/badge/Java-17-blue)
+![Processing](https://img.shields.io/badge/Processing-used-lightblue)
+![AI](https://img.shields.io/badge/AI-Minimax%20%2B%20AlphaBeta-green)
+![Game](https://img.shields.io/badge/type-Checkers-black)
+
 # DameSpiel
 
 DameSpiel is a strategic two-player board game played on an 8×8 checkerboard.
