@@ -1,6 +1,7 @@
 ![Java](https://img.shields.io/badge/Java-17-blue)
 ![Processing](https://img.shields.io/badge/Processing-used-lightblue)
 ![AI](https://img.shields.io/badge/AI-Minimax%20%2B%20AlphaBeta-green)
+![JUnit](https://img.shields.io/badge/Tests-JUnit5-red)
 ![Game](https://img.shields.io/badge/type-Checkers-black)
 
 # DameSpiel
@@ -195,3 +196,8 @@ model.newgame();               // Reset the game
 ## Author
 
 ### *Dimitry Ntofeu Nyatcha* - *Dimzz_Bot edition*
+
+If you enjoy the game or find any bugs, feel free to contact me.  
+Feedback, ideas, or collaboration are always welcome to improve the project.
+
+Email: ntofeunyatchadimitry@gmail.com
