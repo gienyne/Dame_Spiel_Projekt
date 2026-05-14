@@ -189,4 +189,4 @@ model.newgame();               // Reset the game
 
 ## Author
 
-**Dimitry Ntofeu Nyatcha** - *Dimzz_Bot edition*
+### *Dimitry Ntofeu Nyatcha* - *Dimzz_Bot edition*
