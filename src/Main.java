@@ -4,7 +4,8 @@ import Dame.Controller.dameController;
 import Dame.View.dameView;
 
 /**
- * Main-Methode..Hier wird eine Verbindung zwischen model und controller herstellt sowie Controller und view
+ * Main-Methode
+ * Hier wird eine Verbindung zwischen model und controller herstellt sowie Controller und view
  * @param args args
  */
 public class Main {

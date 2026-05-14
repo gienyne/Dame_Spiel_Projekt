@@ -29,7 +29,7 @@ public interface IdameModel {
      *
      * @return aktueller Spielzustand
      */
-    Gamestate getState();
+   Gamestate getState();
 
     /**
      * Setzt den Spielzustand.

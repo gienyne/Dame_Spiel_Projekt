@@ -1,4 +1,6 @@
 package Dame.Model;
+import Dame.Model.Gamestate;
+import Dame.Model.PieceType;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -82,7 +84,13 @@ public class dameModel implements IdameModel {
      * Gewinner der vorherigen Runde.
      * Wird bei newgame() verwendet, um die Siegzaehler zu aktualisieren.
      */
-    private PieceType previousWinner = null;
+    private volatile PieceType previousWinner = null;
+
+    /**
+     * erhöht die Anzahl der Siege
+     */
+    private volatile boolean victoiresIncrementees = false;
+
 
     /**
      * Erstellt ein neues Model und initialisiert den Startzustand.
@@ -98,6 +106,10 @@ public class dameModel implements IdameModel {
      */
     @Override
     public void newgame() {
+
+        victoiresIncrementees = false;
+        previousWinner        = null;
+
         plateau              = new PieceType[TAILLE][TAILLE];
         actuelPlayer         = PieceType.PION_J1;
         selectedX            = -1;
@@ -109,7 +121,6 @@ public class dameModel implements IdameModel {
         nbrDamePlayer1       = 0;
         nbrDamePlayer2       = 0;
         remainingTime        = 600;
-        incrementVictories();
         initPlateau();
         calculePrisePossible();
     }
@@ -431,26 +442,36 @@ public class dameModel implements IdameModel {
 
         setPlateau(fromX, fromY, PieceType.VIDE);
         setPlateau(toX, toY, piece);
+
+        // Check whether a promotion is taking place BEFORE triggering it
+        boolean promotionHasOccured =
+                (piece == PieceType.PION_J1 && toY == TAILLE - 1) ||
+                        (piece == PieceType.PION_J2 && toY == 0);
+
         verifierPromotion(toX, toY);
+
+        // If promoted: the turn ends automatically, regardless of any potential captures
+        if (promotionHasOccured) {
+            prisePossible        = false;
+            pionsPouvantCapturer = new ArrayList<>();
+            clearSelected();
+            return;   // changePlayer() will be called by the controller
+        }
 
         if (estCapture) {
             selectedX = toX;
             selectedY = toY;
-            // Neu berechnen, ob dieser bestimmte Stein noch schlagen kann
-            PieceType pieceApres = plateau[toY][toX];
-            boolean peutEnchaîner = estDame(pieceApres)
-                    ? damePeutCapturer(toX, toY, plateau)
-                    : pionPeutCapturer(toX, toY, plateau);
+            boolean peutEnchaîner = pionPeutCapturer(toX, toY, plateau);
 
             if (peutEnchaîner) {
-                prisePossible = true;
+                prisePossible        = true;
                 pionsPouvantCapturer = new ArrayList<>();
                 pionsPouvantCapturer.add(new int[]{toX, toY});
-                return; // Der Spieler bleibt am Zug
+                return; // Player keeps the turn to continue capturing
             }
         }
 
-        prisePossible = false;
+        prisePossible        = false;
         pionsPouvantCapturer = new ArrayList<>();
         clearSelected();
     }
@@ -472,16 +493,20 @@ public class dameModel implements IdameModel {
         int dy = Integer.signum(toY - fromY);
         int x = fromX + dx, y = fromY + dy;
 
+        boolean aCapture = false;
         while (x != toX || y != toY) {
-            if (estAdversairePour(plateau[y][x], actuelPlayer)) capturerPiece(x, y);
+            if (estAdversairePour(plateau[y][x], actuelPlayer)) {
+                capturerPiece(x, y);
+                aCapture = true;   // mark that a capture has occurred
+            }
             x += dx; y += dy;
         }
 
         setPlateau(fromX, fromY, PieceType.VIDE);
         setPlateau(toX, toY, piece);
 
-        // Prüfen, ob die Dame von toX nach toY schlagen kann
-        if (damePeutCapturer(toX, toY, plateau)) {
+        // Additional captures are allowed ONLY if a capture was just made
+        if (aCapture && damePeutCapturer(toX, toY, plateau)) {
             selectedX = toX;
             selectedY = toY;
             prisePossible = true;
@@ -819,9 +844,26 @@ public class dameModel implements IdameModel {
      */
     @Override
     public void checkGameOver() {
-        if (nbrPionPlayer1 + nbrDamePlayer1 == 0) setState(Gamestate.GAME_OVER);
-        else if (nbrPionPlayer2 + nbrDamePlayer2 == 0) setState(Gamestate.GAME_OVER);
-        else if (isNoMovePossible()) setState(Gamestate.GAME_OVER);
+
+        if (nbrPionPlayer1 + nbrDamePlayer1 == 0) {
+            previousWinner = PieceType.PION_J2;
+            setState(Gamestate.GAME_OVER);
+        }
+
+        else if (nbrPionPlayer2 + nbrDamePlayer2 == 0) {
+            previousWinner = PieceType.PION_J1;
+            setState(Gamestate.GAME_OVER);
+        }
+
+        else if (isNoMovePossible()) {
+
+            previousWinner =
+                    estJ1(actuelPlayer)
+                            ? PieceType.PION_J2
+                            : PieceType.PION_J1;
+
+            setState(Gamestate.GAME_OVER);
+        }
     }
 
     /**
@@ -845,19 +887,24 @@ public class dameModel implements IdameModel {
     /** {@inheritDoc} */
     @Override
     public PieceType getWinner() {
-        if (state != Gamestate.GAME_OVER) return null;
-        if (nbrPionPlayer1 + nbrDamePlayer1 == 0) return PieceType.PION_J2;
-        if (nbrPionPlayer2 + nbrDamePlayer2 == 0) return PieceType.PION_J1;
-        return estJ1(actuelPlayer) ? PieceType.PION_J2 : PieceType.PION_J1;
-    }
 
-    /**
-     * Erhoet den Siegzaehler des Gewinners der vorherigen Runde und inkrementiert die Runde.
-     * Wird einmalig am Anfang von newgame() aufgerufen.
-     */
-    private void incrementVictories() {
-        if (previousWinner == PieceType.PION_J1) { victoirePlayer1++; manche++; }
-        else if (previousWinner == PieceType.PION_J2) { victoirePlayer2++; manche++; }
+        if (state != Gamestate.GAME_OVER)
+            return null;
+
+        if (!victoiresIncrementees && previousWinner != null) {
+
+            victoiresIncrementees = true;
+
+            if (previousWinner == PieceType.PION_J1) {
+                victoirePlayer1++;
+            } else {
+                victoirePlayer2++;
+            }
+
+            manche++;
+        }
+
+        return previousWinner;
     }
 
     /** Aktueller Spielzustand. */

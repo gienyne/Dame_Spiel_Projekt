@@ -1,129 +1,192 @@
-# Dame'Spiel
+# DameSpiel
 
-Dame ist ein strategisches BrettSpiel für zwei Spieler und wird auf einem Schachbrett mit 8 * 8 oder
-international 10 * 10 Feldern gespielt..Dabei werden nur die schwarzen Felder des Spielbretts genutzt
-, auf denen die typischen scheibenförmigen Spielsteine gezogen werden..Ziel des Spiels ist es ,
-die generischen Steine vollständig durch überspringen zu schlagen oder bewegungsunfähig
-zu machen und so das Spiel zu gewinnen..Einer der Spieler verliert entweder wenn er keinen Stein mehr hat oder wenn er mit seinen Steinen
-keinen Zug mehr machen kann , weil seine Steine durch seinen Gegner blockiert sind.. oder wenn nach der Timer einer der Spieler 
-mehr Steine als der andere hat..
+DameSpiel is a strategic two-player board game played on an 8×8 checkerboard.
+Only the dark squares are used, and pieces move diagonally across them.
+The goal is to eliminate all of your opponent's pieces by jumping over them,
+or to leave them with no legal moves.
 
-Neu in dieser Version ist die Integration einer **künstlichen Intelligenz (KI)** sowie die Möglichkeit,
-zwischen zwei Spielmodi zu wählen :
-- Player vs Player
-- Player vs AI
+This version features an **Artificial Intelligence opponent** and two game modes:
+- **Player vs Player** — play locally against a friend
+- **Player vs AI** — challenge the Dimzz_Bot, powered by Minimax with Alpha-Beta Pruning
 
-Die KI basiert auf dem **Minimax-Algorithmus mit Alpha-Beta-Pruning** und spielt als Player 2.
+---
 
-## Verwendete Bibliotheken
+## Rules
 
-Das Program verwendet die folgenden Bibliotheken
+### Basic Movement
+- Pieces (pawns) move **diagonally forward** by one square onto an empty dark square.
+- Only dark squares are used at all times.
 
-- [Processing](http://www.processing.org)
-- [JUnit](https://junit.org/junit5/)
+### Capturing
+- A piece **must** capture an opponent's piece if the opportunity exists (mandatory capture).
+- Capturing is done by **jumping over** an adjacent opponent piece onto the empty square directly behind it.
+- If after a capture another capture is possible from the new position, the player **must continue capturing** (chain capture).
+- **Exception:** if a pawn reaches the promotion row during a chain capture, it is promoted to a Queen and its turn **ends immediately** — it may not continue capturing as a Queen in the same turn.
 
-## Screenschots
-Kurze Übersicht über das Spiel..
+### Promotion (Queen / Dame)
+- A pawn that reaches the **opponent's back row** is promoted to a **Queen (Dame)**.
+- Queens can move **any number of squares diagonally** in any direction (forward or backward).
+- Queens can capture over any distance and land on any free square behind the captured piece.
+- Promotion ends the turn immediately, even if further captures would be possible.
 
-StartBild..
+### Winning Conditions
+A player wins when the opponent:
+1. Has **no pieces left** on the board, or
+2. Has **no legal moves** available (all pieces are blocked).
 
-![StartBildUnit](images/StartBildUnit.png)
+### Timer
+- Each game has a **10-minute timer**.
+- When the timer runs out, the player with **more pieces remaining** wins.
+- If both players have the same number of pieces, the game ends in a **draw**.
 
-Neuer Bildschirm zur Auswahl des Spielmodus (Player vs Player oder Player vs AI)..
+---
 
-![ModeSelect](images/modeSelect.jpg)
+## Game Modes
 
-Hier haben Sie einen kurzen Übersicht über die Funktionalitäten.
-Beim Ende der Timer wird das Spiel sofort beendet.
-
-![PlateauUnit1](images/uebersicht.jpg)
-
-Hier kann festgestellt werden, dass die verschiedenen möglichen bewegungen für
-einen Stein entweder rot oder grün oder die rot und grün dargestellt.
-wird der mögliche Zug rot dargestellt dann bedeutet das, dass einen Schlag 
-in diese Richtung möglich ist..wird der hingegen grün dargestellt dann zeigt es
-einen einfachen Zug...
-
-![PlateauUnit2](images/bewegung1.jpg)
-
-![PlateauUnit2](images/bewegung2.jpg)
-
-verglichen mit den möglichen Bewegungen eines Stein wird die möglichen Züge von der Dame
-durch grüne Punkte dargestellt unabhängig davon ob einen Schlag möglich ist oder nicht
-
-![PlateauUnit3](images/plateauUnit3.png)
-
-EndBild wenn der Gewinner der Player1 ist
-
-![gameOverBildUnit](images/gameOverBildUnit.png)
-
-EndBild wenn der Gewinner der Player2 ist (oder die KI im PVE Modus)
-
-![gameOverBilldUnit2](images/gameOverBilldUnit2.png)
-
-EndBild wenn keiner gewinnt
-
-![gameOverBildUnit0](images/gameOverBildUnit0.png)
+| Mode | Description |
+|------|-------------|
+| **PVP** | Two human players take turns on the same machine |
+| **PVE** | One human player faces the Dimzz_Bot AI |
 
 
+## Artificial Intelligence
 
-## Künstliche Intelligenz
+The AI plays as **Player 2** and uses the **Minimax algorithm with Alpha-Beta Pruning**.
+It simulates possible moves on copies of the board without modifying the real game state.
+The search depth is set to **4 half-moves (plies)**, balancing strength and response time.
 
-Die KI spielt als Player 2 und verwendet den Minimax-Algorithmus mit Alpha-Beta-Pruning.
-Sie simuliert mögliche Spielzüge auf Kopien des Spielfelds, ohne den echten Zustand zu verändern.
+### Evaluation Function
 
-Bewertungsfunktion :
+| Piece | Score |
+|-------|-------|
+| Player 2 Pawn | +10 |
+| Player 2 Queen | +30 |
+| Player 1 Pawn | −10 |
+| Player 1 Queen | −30 |
 
-- Bauer Player 2  : +10 Punkte
-- Dame Player 2   : +30 Punkte
-- Bauer Player 1  : -10 Punkte
-- Dame Player 1   : -30 Punkte
+The AI maximizes its own advantage while minimizing the opponent's.
 
-Die KI versucht somit ihren Vorteil zu maximieren und den des Gegners zu minimieren.
+---
 
-## Architektur
+## Screenshots
 
-Das Projekt wurde nach dem MVC-Prinzip strukturiert :
+**Splash screen**
 
-- Model :
-    - Spiellogik und Regeln
-    - Interface `IdameModel`
-    - Verwendung von Enum :
-        - `GameMode` (PVP / PVE)
-        - `PieceType` (PION_J1, DAME_J1, etc.)
+![StartBild](images/startscreen.png)
 
-- View :
-    - Darstellung mit Processing (`dameView`)
-    - Keine Spiellogik enthalten
+**Mode selection screen**
 
-- Controller :
-    - Verbindet Model und View
-    - Verarbeitet Benutzerinteraktionen
+![ModeSelect](images/selectModeScreen.png)
 
+**In-game view — move hints (red = capture, green = normal move)**
 
-## Startanleitung
-zum **Starten des Spiels**  muss die `main()`-Methode
-in der *Datei*`Main.java` vorhanden sein.
+![Plateau1](images/Spielbrett.png)
 
-1. Öffnen der Datei `Main.java`
-2. Starten der Funktion `main()`
-3. Drücken Sie `SPACE`
-4. Wählen Sie den Modus :
-   - Taste `1` → Player vs Player
-   - Taste `2` → Player vs AI
+![Plateau2](images/bouffeMultipleSimplePion.png)
 
+**Queen move hints shown as green dots**
 
-## JShell Anleitung
+![Plateau3](images/DameMove.png)
 
-1. Starten einer Konsole
-2. Den Befehl `jshell --class-path ./out/production/damesGame`
-   in der Kommandozeile eingeben.
-3. Importieren Sie die Package Dame.Model mit dem Befehl `import Dame.Model.*;`
-4. Erstellen Sie ein Objekt des Modells :
-   `jshell> dameModel model = new dameModel();`
-5. Rufen Sie dann eine Methode auf dem bereits herstellten *Objekt* auf :
-   - Neues Spiel : `model.newgame();`
-   - Zustand anzeigen : `model.toString();`
-6. Weitere Beispiele :
-   - Spielfeld initialisieren : `model.InitPlateaujeu();`
-   - Anzahl der Steine Player 1 : `model.getNbrPionPlayer1();`
+![Plateau3](images/dameMoveBfoblige.png)
+
+**Game Over — Player 2 / AI wins**
+
+![GameOver2](images/gameOverPl2.png)
+
+**Game Over — Player 1 wins**
+
+![GameOver1](images/gameOverpl1.png)
+
+**Game Over — Draw**
+
+![GameOver0](images/gameOverDraw.png)
+
+---
+
+## Architecture (MVC)
+
+The project follows the **Model-View-Controller** pattern:
+
+```
+Dame/
+├── Model/
+│   ├── dameModel.java       — Game logic and rules
+│   ├── IdameModel.java      — Model interface
+│   ├── PieceType.java       — Enum: PION_J1, DAME_J1, PION_J2, DAME_J2, VIDE, BLANC 
+│   ├── GameMode.java        — Enum: PVP, PVE
+│   └── Gamestate.java       — Enum: START, MODE_SELECT, PLAYING, GAME_OVER
+├── View/
+│   ├── dameView.java        — Rendering with Processing (no game logic)
+│   └── IdameView.java       — View interface
+├── Controller/
+│   ├── dameController.java  — Connects Model and View, handles input
+│   ├── IdameController.java — Controller interface
+│   └── timerThread.java     — Background thread managing the countdown
+└── IA/
+    └── dameIA.java          — Minimax AI engine
+```
+
+**Key design decisions:**
+- The View contains **no game logic** — it only draws what the Controller tells it to.
+- The AI runs in a **separate thread** to avoid freezing the display during calculation.
+- Stateless methods in the Model work on **board copies** so the AI can simulate freely.
+
+---
+
+## Libraries
+
+| Library | Purpose |
+|---------|---------|
+| [Processing](https://processing.org) | Rendering and window management |
+| [JUnit 5](https://junit.org/junit5/) | Unit testing |
+
+---
+
+## Getting Started
+
+### Running the game
+
+1. Open `Main.java`
+2. Run the `main()` method
+3. Press `SPACE` on the splash screen
+4. Select a mode:
+   - Press `1` → Player vs Player
+   - Press `2` → Player vs AI
+
+### Controls
+
+| Action | Input |
+|--------|-------|
+| Select a piece | Left click |
+| Move / capture | Left click on highlighted square |
+| Navigate menus | `SPACE`, `1`, `2` |
+
+---
+
+## JShell Quick Start
+
+Test the model logic directly from the command line:
+
+```bash
+# 1. Start JShell with the compiled classes on the classpath
+jshell --class-path ./out/production/damesGame
+
+# 2. Import the model package
+import Dame.Model.*;
+
+# 3. Create a model instance
+dameModel model = new dameModel();
+
+# 4. Try some methods
+model.toString();              // Print the board
+model.getNbrPionPlayer1();     // Number of Player 1 pawns
+model.getNbrPionPlayer2();     // Number of Player 2 pawns
+model.newgame();               // Reset the game
+```
+
+---
+
+## Author
+
+**Dimitry Ntofeu Nyatcha** - *Dimzz_Bot edition*
