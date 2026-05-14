@@ -1,4 +1,5 @@
-![Java](https://img.shields.io/badge/Java-17-blue)
+![Java](https://img.shields.io/badge/Java-21-blue)
+![OpenJDK](https://img.shields.io/badge/OpenJDK-21-orange)
 ![Processing](https://img.shields.io/badge/Processing-used-lightblue)
 ![AI](https://img.shields.io/badge/AI-Minimax%20%2B%20AlphaBeta-green)
 ![JUnit](https://img.shields.io/badge/Tests-JUnit5-red)
