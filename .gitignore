@@ -9,3 +9,4 @@ legal/
 **/.idea/
 out/
 *.iml/
+**/*.html
