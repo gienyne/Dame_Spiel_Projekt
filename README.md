@@ -135,7 +135,7 @@ Dame/
 ```
 
 **Key design decisions:**
-- The View contains **no game logic** — it only draws what the Controller tells it to.
+- The View contains **no game logic**. It only draws what the Controller tells it to.
 - The AI runs in a **separate thread** to avoid freezing the display during calculation.
 - Stateless methods in the Model work on **board copies** so the AI can simulate freely.
 
