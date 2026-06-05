@@ -13,8 +13,8 @@ The goal is to eliminate all of your opponent's pieces by jumping over them,
 or to leave them with no legal moves.
 
 This version features an **Artificial Intelligence opponent** and two game modes:
-- **Player vs Player** — play locally against a friend
-- **Player vs AI** — challenge the Dimzz_Bot, powered by Minimax with Alpha-Beta Pruning
+- **Player vs Player**: play locally against a friend
+- **Player vs AI**: challenge the Dimzz_Bot, powered by Minimax with Alpha-Beta Pruning
 
 ---
 
