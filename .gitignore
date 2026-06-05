@@ -6,3 +6,6 @@
 .idea/
 script-dir/
 legal/
+**/.idea/
+out/
+*.iml/
