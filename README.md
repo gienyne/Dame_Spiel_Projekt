@@ -28,7 +28,7 @@ This version features an **Artificial Intelligence opponent** and two game modes
 - A piece **must** capture an opponent's piece if the opportunity exists (mandatory capture).
 - Capturing is done by **jumping over** an adjacent opponent piece onto the empty square directly behind it.
 - If after a capture another capture is possible from the new position, the player **must continue capturing** (chain capture).
-- **Exception:** if a pawn reaches the promotion row during a chain capture, it is promoted to a Queen and its turn **ends immediately** — it may not continue capturing as a Queen in the same turn.
+- **Exception:** if a pawn reaches the promotion row during a chain capture, it is promoted to a Queen and its turn **ends immediately**. It may not continue capturing as a Queen in the same turn.
 
 ### Promotion (Queen / Dame)
 - A pawn that reaches the **opponent's back row** is promoted to a **Queen (Dame)**.
@@ -85,7 +85,7 @@ The AI maximizes its own advantage while minimizing the opponent's.
 
 ![ModeSelect](images/selectModeScreen.png)
 
-**In-game view — move hints (red = capture, green = normal move)**
+**In-game view: move hints (red = capture, green = normal move)**
 
 ![Plateau1](images/Spielbrett.png)
 
@@ -97,15 +97,15 @@ The AI maximizes its own advantage while minimizing the opponent's.
 
 ![Plateau3](images/dameMoveBfoblige.png)
 
-**Game Over — Player 2 / AI wins**
+**Game Over: Player 2 / AI wins**
 
 ![GameOver2](images/gameOverPl2.png)
 
-**Game Over — Player 1 wins**
+**Game Over: Player 1 wins**
 
 ![GameOver1](images/gameOverpl1.png)
 
-**Game Over — Draw**
+**Game Over: Draw**
 
 ![GameOver0](images/gameOverDraw.png)
 
@@ -118,20 +118,20 @@ The project follows the **Model-View-Controller** pattern:
 ```
 Dame/
 ├── Model/
-│   ├── dameModel.java       — Game logic and rules
-│   ├── IdameModel.java      — Model interface
-│   ├── PieceType.java       — Enum: PION_J1, DAME_J1, PION_J2, DAME_J2, VIDE, BLANC 
-│   ├── GameMode.java        — Enum: PVP, PVE
-│   └── Gamestate.java       — Enum: START, MODE_SELECT, PLAYING, GAME_OVER
+│   ├── dameModel.java       -> Game logic and rules
+│   ├── IdameModel.java      -> Model interface
+│   ├── PieceType.java       -> Enum: PION_J1, DAME_J1, PION_J2, DAME_J2, VIDE, BLANC 
+│   ├── GameMode.java        -> Enum: PVP, PVE
+│   └── Gamestate.java       -> Enum: START, MODE_SELECT, PLAYING, GAME_OVER
 ├── View/
-│   ├── dameView.java        — Rendering with Processing (no game logic)
-│   └── IdameView.java       — View interface
+│   ├── dameView.java        -> Rendering with Processing (no game logic)
+│   └── IdameView.java       -> View interface
 ├── Controller/
-│   ├── dameController.java  — Connects Model and View, handles input
-│   ├── IdameController.java — Controller interface
-│   └── timerThread.java     — Background thread managing the countdown
+│   ├── dameController.java  -> Connects Model and View, handles input
+│   ├── IdameController.java -> Controller interface
+│   └── timerThread.java     -> Background thread managing the countdown
 └── IA/
-    └── dameIA.java          — Minimax AI engine
+    └── dameIA.java          -> Minimax AI engine
 ```
 
 **Key design decisions:**
@@ -158,8 +158,8 @@ Dame/
 2. Run the `main()` method
 3. Press `SPACE` on the splash screen
 4. Select a mode:
-   - Press `1` → Player vs Player
-   - Press `2` → Player vs AI
+   - Press `1` -> Player vs Player
+   - Press `2` -> Player vs AI
 
 ### Controls
 
