@@ -173,25 +173,32 @@ Dame/
 
 ## JShell Quick Start
 
-Test the model logic directly from the command line:
+Test the core game logic interactively directly from the command line:
 
 ```bash
-# 1. Start JShell with the compiled classes on the classpath
+# Launch JShell with the compiled project classes in the classpath
 jshell --class-path ./out/production/damesGame
 
-# 2. Import the model package
+Once JShell is active, run the following commands to inspect and test the model:
+
+// 1. Import the model classes
 import Dame.Model.*;
 
-# 3. Create a model instance
+// 2. Create a model instance (initializes a new game automatically)
 dameModel model = new dameModel();
 
-# 4. Try some methods
-model.toString();              // Print the board
-model.getNbrPionPlayer1();     // Number of Player 1 pawns
-model.getNbrPionPlayer2();     // Number of Player 2 pawns
-model.newgame();               // Reset the game
-```
+// 3. Inspect default game state
+model.getNbrPionPlayer1();    // Returns: 12
+model.getNbrPionPlayer2();    // Returns: 12
+model.getActuelPlayer();       // Returns: PieceType.PION_J1
+model.getRemainingTime();      // Returns: 600
 
+// 4. Test piece selection and move calculations
+model.setSelected(1, 2);
+model.getSelectedX();          // Returns: 1
+model.getPossibleMovesPion(1, 2); // Returns available target coordinates array
+
+```
 ---
 
 ## Author
